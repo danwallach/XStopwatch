@@ -123,7 +123,7 @@ public class TimeView extends SurfaceView {
             result = timeString(timeNow - startTime + priorTime);
         }
 
-        Log.v(TAG, "update text to: " + result);
+//        Log.v(TAG, "update text to: " + result);
 
         if(width == 0 || height == 0) {
             if(drawCounter % 1000 == 1)

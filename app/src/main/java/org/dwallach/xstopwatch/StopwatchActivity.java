@@ -1,18 +1,17 @@
-package org.dwallach.calstopwatch;
+package org.dwallach.xstopwatch;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
-public class MainActivity extends Activity {
-    private static final String TAG = "MainActivity";
+public class StopwatchActivity extends Activity {
+    private static final String TAG = "StopwatchActivity";
 
-    private TimeView timeView;
+    private StopwatchText stopwatchText;
+    private StopwatchState stopwatchState = StopwatchState.getSingleton();
     private ImageButton resetButton;
     private ImageButton playButton;
 
@@ -21,22 +20,28 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        Log.v(TAG, "onCreate");
+        setContentView(R.layout.activity_stopwatch);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
-                timeView = (TimeView) stub.findViewById(R.id.elapsedTime);
+                Log.v(TAG, "onLayoutInflated");
+                stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
                 resetButton = (ImageButton) stub.findViewById(R.id.resetButton);
                 playButton = (ImageButton) stub.findViewById(R.id.playButton);
+
+                // bring in saved preferences
+                PreferencesHelper.loadPreferences(StopwatchActivity.this);
 
                 resetButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.v(TAG, "reset click");
-                        timeView.reset();
+                        stopwatchState.reset();
                         playButton.setImageResource(android.R.drawable.ic_media_play);
                         playIconShown = true;
+                        PreferencesHelper.savePreferences(StopwatchActivity.this);
                     }
                 });
 
@@ -44,16 +49,15 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         if(playIconShown) {
-                            Log.v(TAG, "play click");
-                            timeView.run();
+                            stopwatchState.run();
                             playButton.setImageResource(android.R.drawable.ic_media_pause);
                             playIconShown = false;
                         } else {
-                            Log.v(TAG, "pause click");
-                            timeView.pause();
+                            stopwatchState.pause();
                             playButton.setImageResource(android.R.drawable.ic_media_play);
                             playIconShown = true;
                         }
+                        PreferencesHelper.savePreferences(StopwatchActivity.this);
                     }
                 });
             }

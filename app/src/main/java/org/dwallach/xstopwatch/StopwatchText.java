@@ -1,4 +1,4 @@
-package org.dwallach.calstopwatch;
+package org.dwallach.xstopwatch;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,20 +11,20 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  * Created by dwallach on 12/28/14.
  */
-public class TimeView extends SurfaceView {
-    private final static String TAG = "TimeView";
+public class StopwatchText extends SurfaceView implements Observer {
+    private final static String TAG = "StopwatchText";
 
-    private boolean isRunning;
-    private boolean isReset;
     private boolean isVisible = true;
-    private long priorTime;  // absolute GMT time
-    private long startTime;  // absolute GMT time
+    private StopwatchState state = StopwatchState.getSingleton();
     Paint textPaint;
 
-    public TimeView(Context context, AttributeSet attrs) {
+    public StopwatchText(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         setWillNotDraw(false);
@@ -36,44 +36,11 @@ public class TimeView extends SurfaceView {
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(Typeface.MONOSPACE);
 
-        reset();
+        state.addObserver(this);
     }
 
-    long currentTime() {
-        return System.currentTimeMillis();
-    }
-
-    public TimeView(Context context) {
+    public StopwatchText(Context context) {
         super(context);
-    }
-
-    public void reset() {
-        Log.v(TAG, "reset");
-        isRunning = false;
-        isReset = true;
-        priorTime = startTime = 0;
-
-        invalidate();
-    }
-
-    public void run() {
-        Log.v(TAG, "run");
-
-        isReset = false;
-        startTime = currentTime();
-        isRunning = true;
-
-        invalidate();
-    }
-
-    public void pause() {
-        Log.v(TAG, "pause");
-        isRunning = false;
-
-        long pauseTime = currentTime();
-        priorTime += (pauseTime - startTime);
-
-        invalidate();
     }
 
     @Override
@@ -113,13 +80,17 @@ public class TimeView extends SurfaceView {
 //        Log.v(TAG, "onDraw -- visible: " + isVisible + ", running: " + isRunning);
         drawCounter++;
 
+        long priorTime = state.getPriorTime();
+        long startTime = state.getStartTime();
+        long currentTime = StopwatchState.currentTime();
+
         String result;
-        if(isReset) {
+        if(state.isReset()) {
             result = zeroString;
-        } else if (!isRunning) {
+        } else if (!state.isRunning()) {
             result = timeString(priorTime);
         } else {
-            long timeNow = currentTime();
+            long timeNow = currentTime;
             result = timeString(timeNow - startTime + priorTime);
         }
 
@@ -135,7 +106,7 @@ public class TimeView extends SurfaceView {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         canvas.drawText(result, textX, textY, textPaint);
 
-        if(isVisible & isRunning) {
+        if(isVisible & state.isRunning()) {
             invalidate();
         }
     }
@@ -152,5 +123,11 @@ public class TimeView extends SurfaceView {
         int hrs = (int)((deltaTime / 3600000L) % 100L); // wrap to two digits
 
         return String.format("%02d:%02d:%02d.%02d", hrs, min, sec, cent);
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        // something changed in the StopwatchState...
+        invalidate();
     }
 }

@@ -6,7 +6,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/stopwatch-ic_launcher"
+        android:icon="@drawable/stopwatch_ic_launcher"
         android:label="@string/stopwatch_app_name"
         android:theme="@android:style/Theme.DeviceDefault" >
         <activity

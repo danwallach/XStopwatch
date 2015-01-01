@@ -35,6 +35,9 @@ public class StopwatchActivity extends Activity implements Observer {
                 // bring in saved preferences
                 PreferencesHelper.loadPreferences(StopwatchActivity.this);
 
+                // now that we've loaded the state, we know whether we're playing or paused
+                setPlayButtonIcon();
+
                 // set up notification helper
                 notificationHelper = new StopwatchNotificationHelper(StopwatchActivity.this,
                         R.drawable.stopwatch_ic_launcher,
@@ -61,14 +64,44 @@ public class StopwatchActivity extends Activity implements Observer {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        Log.v(TAG, "onStart");
+
+        stopwatchState.setVisible(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.v(TAG, "onResume");
+
+        stopwatchState.setVisible(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Log.v(TAG, "onPause");
+
+        stopwatchState.setVisible(false);
+    }
+
+    @Override
     public void update(Observable observable, Object data) {
         if(playButton != null) {
-            if (stopwatchState.isRunning())
-                playButton.setImageResource(android.R.drawable.ic_media_pause);
-            else
-                playButton.setImageResource(android.R.drawable.ic_media_play);
-
+            setPlayButtonIcon();
             PreferencesHelper.savePreferences(StopwatchActivity.this);
         }
+    }
+
+    private void setPlayButtonIcon() {
+        if (stopwatchState.isRunning() && playButton != null)
+            playButton.setImageResource(android.R.drawable.ic_media_pause);
+        else
+            playButton.setImageResource(android.R.drawable.ic_media_play);
     }
 }

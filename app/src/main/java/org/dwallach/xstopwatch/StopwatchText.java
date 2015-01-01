@@ -20,7 +20,7 @@ import java.util.Observer;
 public class StopwatchText extends SurfaceView implements Observer {
     private final static String TAG = "StopwatchText";
 
-    private boolean isVisible = true;
+    private boolean visible = true;
     private StopwatchState state = StopwatchState.getSingleton();
     Paint textPaint;
 
@@ -45,11 +45,12 @@ public class StopwatchText extends SurfaceView implements Observer {
 
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
-        isVisible = (visibility == VISIBLE);
+        visible = (visibility == VISIBLE);
 
-        Log.v(TAG, "visible: " + isVisible);
+        Log.v(TAG, "visible: " + visible);
 
-        if(isVisible) invalidate();
+        state.setVisible(visible);
+        if(visible) invalidate();
     }
 
     private float textX, textY;
@@ -77,22 +78,10 @@ public class StopwatchText extends SurfaceView implements Observer {
 
     @Override
     public void onDraw(Canvas canvas) {
-//        Log.v(TAG, "onDraw -- visible: " + isVisible + ", running: " + isRunning);
+//        Log.v(TAG, "onDraw -- visible: " + visible + ", running: " + isRunning);
         drawCounter++;
 
-        long priorTime = state.getPriorTime();
-        long startTime = state.getStartTime();
-        long currentTime = StopwatchState.currentTime();
-
-        String result;
-        if(state.isReset()) {
-            result = zeroString;
-        } else if (!state.isRunning()) {
-            result = timeString(priorTime);
-        } else {
-            long timeNow = currentTime;
-            result = timeString(timeNow - startTime + priorTime);
-        }
+        String result = state.currentTimeString(true);
 
 //        Log.v(TAG, "update text to: " + result);
 
@@ -106,24 +95,11 @@ public class StopwatchText extends SurfaceView implements Observer {
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         canvas.drawText(result, textX, textY, textPaint);
 
-        if(isVisible & state.isRunning()) {
+        if(visible & state.isRunning()) {
             invalidate();
         }
     }
 
-    private static final String zeroString = "00:00:00.00";
-
-    private String drawString = zeroString;
-
-
-    private String timeString(long deltaTime) {
-        int cent = (int)((deltaTime /     10L) % 100L);
-        int sec = (int)((deltaTime /    1000L) % 60L);
-        int min = (int)((deltaTime /   60000L) % 60L);
-        int hrs = (int)((deltaTime / 3600000L) % 100L); // wrap to two digits
-
-        return String.format("%02d:%02d:%02d.%02d", hrs, min, sec, cent);
-    }
 
     @Override
     public void update(Observable observable, Object data) {

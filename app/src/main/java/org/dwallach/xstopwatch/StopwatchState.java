@@ -1,5 +1,6 @@
 package org.dwallach.xstopwatch;
 
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import java.util.Observable;
@@ -116,18 +117,17 @@ public class StopwatchState extends Observable {
 
     private static String timeString(long deltaTime, boolean subSeconds) {
         int cent = (int)((deltaTime /     10L) % 100L);
-        int sec = (int)((deltaTime /    1000L) % 60L);
-        int min = (int)((deltaTime /   60000L) % 60L);
-        int hrs = (int)((deltaTime / 3600000L) % 100L); // wrap to two digits
 
+        String secondsResult = DateUtils.formatElapsedTime(deltaTime / 1000);
         if(subSeconds)
-            return String.format("%02d:%02d:%02d.%02d", hrs, min, sec, cent);
+            return String.format("%s.%02d", secondsResult, cent);
         else
-            return String.format("%02d:%02d:%02d", hrs, min, sec);
+            return secondsResult;
+
     }
 
-    private static final String zeroString = "00:00:00.00";
-    private static final String zeroStringNoSubSeconds = "00:00:00";
+    private static final String zeroString = timeString(0, true);
+    private static final String zeroStringNoSubSeconds = timeString(0, false);
 
     public String currentTimeString(boolean subSeconds) {
         long priorTime = getPriorTime();

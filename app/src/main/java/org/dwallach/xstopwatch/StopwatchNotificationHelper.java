@@ -1,11 +1,11 @@
 package org.dwallach.xstopwatch;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -20,10 +20,11 @@ public class StopwatchNotificationHelper implements Observer {
     private final static String TAG = "StopwatchNotificationHelper";
 
     private final int notificationID = 001;
-    private int iconID;
+    private int appIcon;
     private String title;
     private Context context;
-    private PendingIntent pendingIntent;
+    private PendingIntent clickPendingIntent;
+    private PendingIntent launchPendingIntent;
 
     public static final String ACTION_NOTIFICATION_CLICK = "intent.action.notification.stopwatch.click";
     private static final int MSG_UPDATE_TIME = 2;
@@ -48,9 +49,9 @@ public class StopwatchNotificationHelper implements Observer {
         }
     };
 
-    public StopwatchNotificationHelper(Context context, int iconID, String title) {
+    public StopwatchNotificationHelper(Context context, int appIcon, String title) {
         this.context = context;
-        this.iconID = iconID;
+        this.appIcon = appIcon;
         this.title = title;
     }
 
@@ -64,9 +65,14 @@ public class StopwatchNotificationHelper implements Observer {
             // Builds the notification and issues it.
             notifyManager.cancel(notificationID);
 
-            if(pendingIntent != null) {
-                pendingIntent.cancel();
-                pendingIntent = null;
+            if(clickPendingIntent != null) {
+                clickPendingIntent.cancel();
+                clickPendingIntent = null;
+            }
+
+            if(launchPendingIntent != null) {
+                launchPendingIntent.cancel();
+                launchPendingIntent = null;
             }
 
         } catch (Throwable throwable) {
@@ -84,30 +90,36 @@ public class StopwatchNotificationHelper implements Observer {
         // This seems to explain what I want to do:
         // http://stackoverflow.com/questions/24494663/how-to-add-button-directly-on-notification-on-android-wear
 
-        if(pendingIntent == null)
-            pendingIntent =  PendingIntent.getBroadcast(context, 0, new Intent(ACTION_NOTIFICATION_CLICK), PendingIntent.FLAG_UPDATE_CURRENT);
+        if(clickPendingIntent == null)
+            clickPendingIntent =  PendingIntent.getBroadcast(context, 0, new Intent(ACTION_NOTIFICATION_CLICK), PendingIntent.FLAG_UPDATE_CURRENT);
 
-        int myIcon = (isRunning) ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play;
+        if(launchPendingIntent == null)
+            launchPendingIntent = PendingIntent.getActivity(context, 1, new Intent(context, StopwatchActivity.class), 0);
+
+        int playPauseIcon = (isRunning) ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play;
+
+        Resources resources = context.getResources();
+        int accentColor = resources.getColor(R.color.accent);
 
         Notification notification =
                 new Notification.Builder(context)
+//                        .setStyle(new Notification.MediaStyle())   // this doesn't do anything, which is too bad; trying to add some style to the buttons
                         .setOngoing(true)
-//                        .setAutoCancel(true)
-//                        .setContentIntent(pendingIntent)
-//                        .setDeleteIntent(pendingIntent)
-                        .setSmallIcon(iconID)
-//                        .setSmallIcon(myIcon)
+                        .setSmallIcon(appIcon)
                         .setContentTitle(timeString)
+//                        .setContentTitle(title)
 //                        .setContentText(timeString)
-                        .addAction(myIcon, timeString, pendingIntent)
+//                        .setColor(accentColor)                     // this doesn't do anything either; doesn't appear to be any way to customize the colors!
+                        .addAction(playPauseIcon, timeString, clickPendingIntent)
+                        .addAction(appIcon, title, launchPendingIntent)
                         .extend(new Notification.WearableExtender()
-                                .setContentAction(0))
+                                                    .setHintHideIcon(true)
+                                                    .setContentAction(0))
                 .build();
 
 
-        // Gets an instance of the NotificationManager service
+        // launch the notification
         NotificationManager notifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        // Builds the notification and issues it.
         notifyManager.notify(notificationID, notification);
 
         // if we're running, then we'll need to update the counter in a second, so we'll do

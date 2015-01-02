@@ -21,8 +21,19 @@ public class PreferencesHelper {
         editor.putBoolean(Constants.prefStopwatchRunning, stopwatchState.isRunning());
         editor.putBoolean(Constants.prefStopwatchReset, stopwatchState.isReset());
 
-        if(!editor.commit())
+        if (!editor.commit())
             Log.v(TAG, "savePreferences commit failed ?!");
+    }
+
+    public static void broadcastPreferences(Context context) {
+        StopwatchState stopwatchState = StopwatchState.getSingleton();
+
+        // There's a chance that our app is not running but we received the broadcast intent
+        // asking for our state to be sent out again. In that case, we'll need to load up
+        // the preferences again. Otherwise we'll be sending out incorrect data.
+
+        if(!stopwatchState.isInitialized())
+            loadPreferences(context);
 
         Intent broadcast = new Intent(Constants.stopwatchUpdateIntent);
         broadcast.putExtra(Constants.prefStopwatchStartTime, stopwatchState.getStartTime());

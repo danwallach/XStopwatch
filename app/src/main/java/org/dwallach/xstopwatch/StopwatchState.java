@@ -16,6 +16,7 @@ public class StopwatchState extends Observable {
     private long priorTime;  // absolute GMT time
     private long startTime;  // absolute GMT time
     private boolean visible;
+    private boolean initialized;
 
     private StopwatchState() {
         running = false;
@@ -23,12 +24,20 @@ public class StopwatchState extends Observable {
         priorTime = 0;
         startTime = 0;
         visible = false;
+
+        initialized = false;
     }
 
     private static StopwatchState singleton;
 
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     public void setVisible(boolean visible) {
+        Log.v(TAG, "visible: " + visible);
         this.visible = visible;
+        initialized = true;
         pingObservers();
     }
 
@@ -67,6 +76,7 @@ public class StopwatchState extends Observable {
         running = false;
         reset = true;
         priorTime = startTime = 0;
+        initialized = true;
 
         pingObservers();
     }
@@ -77,6 +87,7 @@ public class StopwatchState extends Observable {
         reset = false;
         startTime = currentTime();
         running = true;
+        initialized = true;
 
         pingObservers();
     }
@@ -87,6 +98,7 @@ public class StopwatchState extends Observable {
 
         long pauseTime = currentTime();
         priorTime += (pauseTime - startTime);
+        initialized = true;
 
         pingObservers();
     }
@@ -101,16 +113,20 @@ public class StopwatchState extends Observable {
 
     public void pingObservers() {
         // this incantation will make observers elsewhere aware that there's new content
+        Log.v(TAG, "pinging");
         setChanged();
         notifyObservers();
         clearChanged();
+        Log.v(TAG, "ping complete");
     }
 
     public void restoreState(long priorTime, long startTime, boolean running, boolean reset) {
+        Log.v(TAG, "restoring state");
         this.priorTime = priorTime;
         this.startTime = startTime;
         this.running = running;
         this.reset = reset;
+        initialized = true;
 
         pingObservers();
     }

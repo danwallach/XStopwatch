@@ -133,6 +133,7 @@ public class StopwatchNotificationHelper implements Observer {
 
     @Override
     public void update(Observable observable, Object data) {
+//        Log.v(TAG, "updating notification state");
         StopwatchState stopwatchState = (StopwatchState) observable;
 
         if(stopwatchState.isVisible() || stopwatchState.isReset()) kill();

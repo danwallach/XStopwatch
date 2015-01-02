@@ -35,8 +35,6 @@ public class StopwatchText extends SurfaceView implements Observer {
         textPaint.setColor(Color.WHITE);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(Typeface.MONOSPACE);
-
-        state.addObserver(this);
     }
 
     public StopwatchText(Context context) {
@@ -104,6 +102,7 @@ public class StopwatchText extends SurfaceView implements Observer {
     @Override
     public void update(Observable observable, Object data) {
         // something changed in the StopwatchState...
+        Log.v(TAG, "update: invalidating text");
         invalidate();
     }
 }

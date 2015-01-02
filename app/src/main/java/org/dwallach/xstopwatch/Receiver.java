@@ -15,12 +15,13 @@ public class Receiver extends BroadcastReceiver {
         if(intent.getAction().equals(StopwatchNotificationHelper.ACTION_NOTIFICATION_CLICK)) {
             Log.v(TAG, "remote click");
             StopwatchState.getSingleton().click();
+            PreferencesHelper.savePreferences(context);
             return;
         }
 
         if(intent.getAction().equals(Constants.stopwatchQueryIntent)) {
             Log.v(TAG, "remote query!");
-            PreferencesHelper.savePreferences(context); // triggers a broadcast
+            PreferencesHelper.broadcastPreferences(context); // triggers a broadcast
         }
     }
 }

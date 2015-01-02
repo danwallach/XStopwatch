@@ -17,6 +17,7 @@ public class StopwatchActivity extends Activity implements Observer {
     private ImageButton resetButton;
     private ImageButton playButton;
     private StopwatchNotificationHelper notificationHelper;
+    private StopwatchText stopwatchText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class StopwatchActivity extends Activity implements Observer {
                 Log.v(TAG, "onLayoutInflated");
                 resetButton = (ImageButton) stub.findViewById(R.id.resetButton);
                 playButton = (ImageButton) stub.findViewById(R.id.playButton);
+                stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
 
                 // bring in saved preferences
                 PreferencesHelper.loadPreferences(StopwatchActivity.this);
@@ -38,18 +40,21 @@ public class StopwatchActivity extends Activity implements Observer {
                 // now that we've loaded the state, we know whether we're playing or paused
                 setPlayButtonIcon();
 
-                // set up notification helper
-                notificationHelper = new StopwatchNotificationHelper(StopwatchActivity.this,
-                        R.drawable.stopwatch_trans_ic_launcher,
-                        getResources().getString(R.string.stopwatch_app_name));
+                // set up notification helper, and use this as a proxy for whether
+                // or not we need to set up everybody who pays attention to the stopwatchState
+                if(notificationHelper == null) {
+                    notificationHelper = new StopwatchNotificationHelper(StopwatchActivity.this,
+                            R.drawable.stopwatch_trans_ic_launcher,
+                            getResources().getString(R.string.stopwatch_app_name));
 
-                stopwatchState.addObserver(notificationHelper);
-                stopwatchState.addObserver(StopwatchActivity.this);
+                    setStopwatchObservers(true);
+                }
 
                 resetButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         stopwatchState.reset();
+                        PreferencesHelper.savePreferences(StopwatchActivity.this);
                     }
                 });
 
@@ -57,10 +62,30 @@ public class StopwatchActivity extends Activity implements Observer {
                     @Override
                     public void onClick(View v) {
                         stopwatchState.click();
+                        PreferencesHelper.savePreferences(StopwatchActivity.this);
                     }
                 });
             }
         });
+    }
+
+    /**
+     * install the observers that care about the stopwatchState: "this", which updates the
+     * visible UI parts of the activity, and the notificationHelper, which deals with the popup
+     * notifications elsewhere
+     *
+     * @param includeActivity If the current activity isn't visible, then make this false and it won't be notified
+     */
+    private void setStopwatchObservers(boolean includeActivity) {
+        stopwatchState.deleteObservers();
+        if(notificationHelper != null)
+            stopwatchState.addObserver(notificationHelper);
+        if(includeActivity) {
+            stopwatchState.addObserver(this);
+
+            if (stopwatchText != null)
+                stopwatchState.addObserver(stopwatchText);
+        }
     }
 
     @Override
@@ -70,6 +95,7 @@ public class StopwatchActivity extends Activity implements Observer {
         Log.v(TAG, "onStart");
 
         stopwatchState.setVisible(true);
+        setStopwatchObservers(true);
     }
 
     @Override
@@ -79,6 +105,7 @@ public class StopwatchActivity extends Activity implements Observer {
         Log.v(TAG, "onResume");
 
         stopwatchState.setVisible(true);
+        setStopwatchObservers(true);
     }
 
     @Override
@@ -88,14 +115,14 @@ public class StopwatchActivity extends Activity implements Observer {
         Log.v(TAG, "onPause");
 
         stopwatchState.setVisible(false);
+        setStopwatchObservers(false);
     }
 
     @Override
     public void update(Observable observable, Object data) {
-        if(playButton != null) {
+        Log.v(TAG, "activity update");
+        if(playButton != null)
             setPlayButtonIcon();
-            PreferencesHelper.savePreferences(StopwatchActivity.this);
-        }
     }
 
     private void setPlayButtonIcon() {

@@ -11,6 +11,7 @@
         android:theme="@android:style/Theme.DeviceDefault" >
         <activity
             android:name="org.dwallach.xstopwatch.StopwatchActivity"
+            android:launchMode="singleTop"
             android:label="@string/stopwatch_app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,6 +26,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="intent.action.notification.stopwatch.click" />
+                <action android:name="org.dwallach.x.stopwatch.query" />
             </intent-filter>
         </receiver>
 

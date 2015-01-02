@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-/**
- * Created by dwallach on 1/1/15.
- */
 public class Receiver extends BroadcastReceiver {
     private final static String TAG = "Receiver";
 
@@ -16,7 +13,14 @@ public class Receiver extends BroadcastReceiver {
         Log.v(TAG, "got intent: " + intent.toString());
 
         if(intent.getAction().equals(StopwatchNotificationHelper.ACTION_NOTIFICATION_CLICK)) {
+            Log.v(TAG, "remote click");
             StopwatchState.getSingleton().click();
+            return;
+        }
+
+        if(intent.getAction().equals(Constants.stopwatchQueryIntent)) {
+            Log.v(TAG, "remote query!");
+            PreferencesHelper.savePreferences(context); // triggers a broadcast
         }
     }
 }

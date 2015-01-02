@@ -23,9 +23,12 @@ public class PreferencesHelper {
 
         if (!editor.commit())
             Log.v(TAG, "savePreferences commit failed ?!");
+
+        broadcastPreferences(context);
     }
 
     public static void broadcastPreferences(Context context) {
+        Log.v(TAG, "broadcastPreferences");
         StopwatchState stopwatchState = StopwatchState.getSingleton();
 
         // There's a chance that our app is not running but we received the broadcast intent

@@ -20,6 +20,7 @@ public class PreferencesHelper {
         editor.putLong(Constants.prefStopwatchPriorTime, stopwatchState.getPriorTime());
         editor.putBoolean(Constants.prefStopwatchRunning, stopwatchState.isRunning());
         editor.putBoolean(Constants.prefStopwatchReset, stopwatchState.isReset());
+        editor.putLong(Constants.prefStopwatchUpdateTimestamp, stopwatchState.getUpdateTimestamp());
 
         if (!editor.commit())
             Log.v(TAG, "savePreferences commit failed ?!");
@@ -43,6 +44,7 @@ public class PreferencesHelper {
         broadcast.putExtra(Constants.prefStopwatchPriorTime, stopwatchState.getPriorTime());
         broadcast.putExtra(Constants.prefStopwatchRunning, stopwatchState.isRunning());
         broadcast.putExtra(Constants.prefStopwatchReset, stopwatchState.isReset());
+        broadcast.putExtra(Constants.prefStopwatchUpdateTimestamp, stopwatchState.getUpdateTimestamp());
         context.sendBroadcast(broadcast);
     }
 
@@ -57,9 +59,10 @@ public class PreferencesHelper {
         long startTime = prefs.getLong(Constants.prefStopwatchStartTime, 0L);
         boolean isRunning = prefs.getBoolean(Constants.prefStopwatchRunning, false);
         boolean isReset = prefs.getBoolean(Constants.prefStopwatchReset, true);
+        long updateTimestamp = prefs.getLong(Constants.prefStopwatchUpdateTimestamp, 0L);
 
-        Log.v(TAG, "Stopwatch:: startTime(" + startTime + "), priorTime(" + priorTime + "), isRunning(" + isRunning + "), isReset(" + isReset + ")" );
+        Log.v(TAG, "Stopwatch:: startTime(" + startTime + "), priorTime(" + priorTime + "), isRunning(" + isRunning + "), isReset(" + isReset + "), updateTimestamp(" + updateTimestamp + ")" );
 
-        stopwatchState.restoreState(priorTime, startTime, isRunning, isReset);
+        stopwatchState.restoreState(priorTime, startTime, isRunning, isReset, updateTimestamp);
     }
 }

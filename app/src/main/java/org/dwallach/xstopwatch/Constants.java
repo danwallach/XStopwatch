@@ -8,6 +8,7 @@ public class Constants {
     public static final String prefStopwatchReset = "reset";
     public static final String prefStopwatchStartTime = "startTime";
     public static final String prefStopwatchPriorTime = "priorTime";
+    public static final String prefStopwatchUpdateTimestamp = "updateTimestamp";
 
     public static final String sharedPrefsStopwatch = "org.dwallach.x.stopwatch.prefs";
 

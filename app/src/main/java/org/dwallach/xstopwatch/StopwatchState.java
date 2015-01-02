@@ -13,8 +13,9 @@ public class StopwatchState extends Observable {
 
     private boolean running;
     private boolean reset;
-    private long priorTime;  // absolute GMT time
-    private long startTime;  // absolute GMT time
+    private long priorTime;  // extra time to add in (accounting for prior pause/restart cycles)
+    private long startTime;  // when the stopwatch started running
+    private long updateTimestamp;  // when the last user interaction was
     private boolean visible;
     private boolean initialized;
 
@@ -29,6 +30,10 @@ public class StopwatchState extends Observable {
     }
 
     private static StopwatchState singleton;
+
+    public long getUpdateTimestamp() {
+        return updateTimestamp;
+    }
 
     public boolean isInitialized() {
         return initialized;
@@ -78,6 +83,8 @@ public class StopwatchState extends Observable {
         priorTime = startTime = 0;
         initialized = true;
 
+        updateTimestamp = currentTime();
+
         pingObservers();
     }
 
@@ -89,6 +96,8 @@ public class StopwatchState extends Observable {
         running = true;
         initialized = true;
 
+        updateTimestamp = currentTime();
+
         pingObservers();
     }
 
@@ -99,6 +108,8 @@ public class StopwatchState extends Observable {
         long pauseTime = currentTime();
         priorTime += (pauseTime - startTime);
         initialized = true;
+
+        updateTimestamp = currentTime();
 
         pingObservers();
     }
@@ -120,12 +131,13 @@ public class StopwatchState extends Observable {
         Log.v(TAG, "ping complete");
     }
 
-    public void restoreState(long priorTime, long startTime, boolean running, boolean reset) {
+    public void restoreState(long priorTime, long startTime, boolean running, boolean reset, long updateTimestamp) {
         Log.v(TAG, "restoring state");
         this.priorTime = priorTime;
         this.startTime = startTime;
         this.running = running;
         this.reset = reset;
+        this.updateTimestamp = updateTimestamp;
         initialized = true;
 
         pingObservers();

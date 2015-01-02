@@ -35,6 +35,10 @@ public class StopwatchState extends Observable {
         return updateTimestamp;
     }
 
+    private void makeUpdateTimestamp() {
+        updateTimestamp = currentTime();
+    }
+
     public boolean isInitialized() {
         return initialized;
     }
@@ -43,6 +47,9 @@ public class StopwatchState extends Observable {
         Log.v(TAG, "visible: " + visible);
         this.visible = visible;
         initialized = true;
+
+        makeUpdateTimestamp();
+
         pingObservers();
     }
 
@@ -83,7 +90,7 @@ public class StopwatchState extends Observable {
         priorTime = startTime = 0;
         initialized = true;
 
-        updateTimestamp = currentTime();
+        makeUpdateTimestamp();
 
         pingObservers();
     }
@@ -96,7 +103,7 @@ public class StopwatchState extends Observable {
         running = true;
         initialized = true;
 
-        updateTimestamp = currentTime();
+        makeUpdateTimestamp();
 
         pingObservers();
     }
@@ -109,7 +116,7 @@ public class StopwatchState extends Observable {
         priorTime += (pauseTime - startTime);
         initialized = true;
 
-        updateTimestamp = currentTime();
+        makeUpdateTimestamp();
 
         pingObservers();
     }

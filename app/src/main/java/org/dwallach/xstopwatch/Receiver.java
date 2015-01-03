@@ -36,7 +36,7 @@ public class Receiver extends BroadcastReceiver {
 
         if(action.equals(Constants.stopwatchQueryIntent) || action.equals(Constants.timerQueryIntent)) {
             Log.v(TAG, "remote query!");
-            PreferencesHelper.broadcastPreferences(context);
+            PreferencesHelper.broadcastPreferences(context, action);
             return;
         }
     }

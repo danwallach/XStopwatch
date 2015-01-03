@@ -49,6 +49,9 @@ public class PreferencesHelper {
     }
 
     public static void broadcastPreferences(Context context) {
+        broadcastPreferences(context, null);
+    }
+    public static void broadcastPreferences(Context context, String action) {
         Log.v(TAG, "broadcastPreferences");
         StopwatchState stopwatchState = StopwatchState.getSingleton();
         TimerState timerState = TimerState.getSingleton();
@@ -60,33 +63,36 @@ public class PreferencesHelper {
         if(!stopwatchState.isInitialized() || !timerState.isInitialized())
             loadPreferences(context);
 
-        if(!stopwatchState.isInitialized()) {
-            Log.e(TAG, "stopwatch state not initialized, can't broadcast preferences");
-        } else {
-            Log.v(TAG, "broadcasting stopwatch preferences");
-            Intent broadcast = new Intent(Constants.stopwatchUpdateIntent);
-            broadcast.putExtra(Constants.prefStopwatchStartTime, stopwatchState.getStartTime());
-            broadcast.putExtra(Constants.prefStopwatchPriorTime, stopwatchState.getPriorTime());
-            broadcast.putExtra(Constants.prefStopwatchRunning, stopwatchState.isRunning());
-            broadcast.putExtra(Constants.prefStopwatchReset, stopwatchState.isReset());
-            broadcast.putExtra(Constants.prefStopwatchUpdateTimestamp, stopwatchState.getUpdateTimestamp());
-            context.sendBroadcast(broadcast);
+        if(action == null || action.equals(Constants.stopwatchQueryIntent)) {
+            if (!stopwatchState.isInitialized()) {
+                Log.e(TAG, "stopwatch state not initialized, can't broadcast preferences");
+            } else {
+                Log.v(TAG, "broadcasting stopwatch preferences");
+                Intent broadcast = new Intent(Constants.stopwatchUpdateIntent);
+                broadcast.putExtra(Constants.prefStopwatchStartTime, stopwatchState.getStartTime());
+                broadcast.putExtra(Constants.prefStopwatchPriorTime, stopwatchState.getPriorTime());
+                broadcast.putExtra(Constants.prefStopwatchRunning, stopwatchState.isRunning());
+                broadcast.putExtra(Constants.prefStopwatchReset, stopwatchState.isReset());
+                broadcast.putExtra(Constants.prefStopwatchUpdateTimestamp, stopwatchState.getUpdateTimestamp());
+                context.sendBroadcast(broadcast);
+            }
         }
 
-        if(!timerState.isInitialized()) {
-            Log.e(TAG, "timer state not initialized, can't broadcast preferences");
-        } else {
-            Log.v(TAG, "broadcasting timer preferences");
-            Intent broadcast = new Intent(Constants.timerUpdateIntent);
-            broadcast.putExtra(Constants.prefTimerStartTime, timerState.getStartTime());
-            broadcast.putExtra(Constants.prefTimerPauseDelta, timerState.getPauseDelta());
-            broadcast.putExtra(Constants.prefTimerDuration, timerState.getDuration());
-            broadcast.putExtra(Constants.prefTimerRunning, timerState.isRunning());
-            broadcast.putExtra(Constants.prefTimerReset, timerState.isReset());
-            broadcast.putExtra(Constants.prefTimerUpdateTimestamp, timerState.getUpdateTimestamp());
-            context.sendBroadcast(broadcast);
+        if(action == null || action.equals(Constants.timerQueryIntent)) {
+            if (!timerState.isInitialized()) {
+                Log.e(TAG, "timer state not initialized, can't broadcast preferences");
+            } else {
+                Log.v(TAG, "broadcasting timer preferences");
+                Intent broadcast = new Intent(Constants.timerUpdateIntent);
+                broadcast.putExtra(Constants.prefTimerStartTime, timerState.getStartTime());
+                broadcast.putExtra(Constants.prefTimerPauseDelta, timerState.getPauseDelta());
+                broadcast.putExtra(Constants.prefTimerDuration, timerState.getDuration());
+                broadcast.putExtra(Constants.prefTimerRunning, timerState.isRunning());
+                broadcast.putExtra(Constants.prefTimerReset, timerState.isReset());
+                broadcast.putExtra(Constants.prefTimerUpdateTimestamp, timerState.getUpdateTimestamp());
+                context.sendBroadcast(broadcast);
+            }
         }
-
     }
 
     public static void loadPreferences(Context context) {

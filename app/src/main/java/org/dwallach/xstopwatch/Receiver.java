@@ -1,3 +1,9 @@
+/*
+ * XStopwatch / XTimer
+ * Copyright (C) 2014 by Dan Wallach
+ * Home page: http://www.cs.rice.edu/~dwallach/xstopwatch/
+ * Licensing: http://www.cs.rice.edu/~dwallach/xstopwatch/licensing.html
+ */
 package org.dwallach.xstopwatch;
 
 import android.content.BroadcastReceiver;

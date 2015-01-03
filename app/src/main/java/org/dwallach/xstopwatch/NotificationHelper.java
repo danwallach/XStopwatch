@@ -1,3 +1,9 @@
+/*
+ * XStopwatch / XTimer
+ * Copyright (C) 2014 by Dan Wallach
+ * Home page: http://www.cs.rice.edu/~dwallach/xstopwatch/
+ * Licensing: http://www.cs.rice.edu/~dwallach/xstopwatch/licensing.html
+ */
 package org.dwallach.xstopwatch;
 
 import android.app.Notification;
@@ -13,9 +19,6 @@ import android.util.Log;
 import java.util.Observable;
 import java.util.Observer;
 
-/**
- * Created by dwallach on 12/31/14.
- */
 public class NotificationHelper implements Observer {
     private final static String TAG = "NotificationHelper";
 

@@ -1,3 +1,9 @@
+/*
+ * XStopwatch / XTimer
+ * Copyright (C) 2014 by Dan Wallach
+ * Home page: http://www.cs.rice.edu/~dwallach/xstopwatch/
+ * Licensing: http://www.cs.rice.edu/~dwallach/xstopwatch/licensing.html
+ */
 package org.dwallach.xstopwatch;
 
 import android.content.Context;
@@ -14,9 +20,6 @@ import android.view.View;
 import java.util.Observable;
 import java.util.Observer;
 
-/**
- * Created by dwallach on 12/28/14.
- */
 public class StopwatchText extends SurfaceView implements Observer {
     private final static String TAG = "StopwatchText";
 

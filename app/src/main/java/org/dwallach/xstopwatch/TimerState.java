@@ -1,3 +1,9 @@
+/*
+ * XStopwatch / XTimer
+ * Copyright (C) 2014 by Dan Wallach
+ * Home page: http://www.cs.rice.edu/~dwallach/xstopwatch/
+ * Licensing: http://www.cs.rice.edu/~dwallach/xstopwatch/licensing.html
+ */
 package org.dwallach.xstopwatch;
 
 import android.os.Handler;
@@ -8,9 +14,6 @@ import android.util.Log;
 
 import java.util.Observable;
 
-/**
- * Created by dwallach on 12/30/14.
- */
 public class TimerState extends SharedState {
     private final static String TAG = "TimerState";
 

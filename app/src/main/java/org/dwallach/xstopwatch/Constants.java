@@ -1,8 +1,11 @@
+/*
+ * XStopwatch / XTimer
+ * Copyright (C) 2014 by Dan Wallach
+ * Home page: http://www.cs.rice.edu/~dwallach/xstopwatch/
+ * Licensing: http://www.cs.rice.edu/~dwallach/xstopwatch/licensing.html
+ */
 package org.dwallach.xstopwatch;
 
-/**
- * Created by dwallach on 12/30/14.
- */
 public class Constants {
     public static final String prefStopwatchRunning = "running";
     public static final String prefStopwatchReset = "reset";

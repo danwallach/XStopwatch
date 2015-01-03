@@ -63,7 +63,13 @@ public class TimerState extends SharedState {
     public void run() {
         Log.v(TAG, "run");
 
-        startTime = currentTime();
+        if(isReset())
+            startTime = currentTime();
+        else {
+            // we're resuming from a pause, so we need to shove up the start time
+            long pauseTime = startTime + pauseDelta;
+            startTime += currentTime() - pauseTime;
+        }
 
         updateBuzzHandler();
         super.run();
@@ -133,7 +139,7 @@ public class TimerState extends SharedState {
     }
 
     public Class getActivity() {
-        return StopwatchActivity.class;
+        return TimerActivity.class;
     }
 
     private Handler buzzHandler;

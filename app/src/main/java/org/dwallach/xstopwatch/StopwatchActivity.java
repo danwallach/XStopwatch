@@ -46,7 +46,7 @@ public class StopwatchActivity extends Activity implements Observer {
                 // or not we need to set up everybody who pays attention to the stopwatchState
                 if(notificationHelper == null) {
                     notificationHelper = new NotificationHelper(StopwatchActivity.this,
-                            R.drawable.stopwatch_trans_ic_launcher,
+                            R.drawable.stopwatch_trans,
                             getResources().getString(R.string.stopwatch_app_name),
                             stopwatchState);
 

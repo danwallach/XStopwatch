@@ -91,7 +91,7 @@ public class TimerActivity extends Activity implements Observer {
                 // or not we need to set up everybody who pays attention to the timerState
                 if(notificationHelper == null) {
                     notificationHelper = new NotificationHelper(TimerActivity.this,
-                            R.drawable.sandwatch_trans_ic_launcher,
+                            R.drawable.sandwatch_trans,
                             getResources().getString(R.string.timer_app_name),
                             timerState);
 

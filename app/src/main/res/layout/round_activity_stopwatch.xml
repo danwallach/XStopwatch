@@ -6,6 +6,40 @@
     android:gravity="center_vertical"
     style="@style/Theme.Wearable">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:measureWithLargestChild="false"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:baselineAligned="true">
+
+        <ImageButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/stopwatchButton"
+            android:src="@drawable/stopwatch_selected"
+            android:layout_gravity="left"
+            android:layout_weight="2"
+            android:adjustViewBounds="false"
+            android:cropToPadding="false"
+            android:background="#00000000"
+            android:layout_marginLeft="20dp" />
+
+        <ImageButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/timerButton"
+            android:src="@drawable/sandwatch_deselected"
+            android:onClick="launchTimer"
+            android:layout_gravity="right"
+            android:layout_weight="2"
+            android:background="#00000000"
+            android:adjustViewBounds="false"
+            android:layout_marginRight="20dp" />
+    </LinearLayout>
+
     <org.dwallach.xstopwatch.StopwatchText
         android:layout_width="wrap_content"
         android:layout_height="40dp"

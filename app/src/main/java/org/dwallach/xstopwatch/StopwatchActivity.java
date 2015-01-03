@@ -1,6 +1,7 @@
 package org.dwallach.xstopwatch;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
@@ -69,6 +70,11 @@ public class StopwatchActivity extends Activity implements Observer {
                 });
             }
         });
+    }
+
+    // call to this specified in the layout xml files
+    public void launchTimer(View view) {
+        startActivity(new Intent(this, TimerActivity.class));
     }
 
     /**

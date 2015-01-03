@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,6 +56,11 @@ public class TimerActivity extends Activity implements Observer {
     public void showTimePickerDialog(View v) {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getFragmentManager(), "timePicker");
+    }
+
+    // call to this specified in the layout xml files
+    public void launchStopwatch(View view) {
+        startActivity(new Intent(this, StopwatchActivity.class));
     }
 
     @Override

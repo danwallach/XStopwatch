@@ -8,12 +8,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/stopwatch_trans_ic_launcher"
+        android:icon="@drawable/stopwatch_trans"
         android:label="@string/stopwatch_app_name"
         android:theme="@android:style/Theme.DeviceDefault" >
         <activity
             android:name="org.dwallach.xstopwatch.StopwatchActivity"
-            android:icon="@drawable/stopwatch_trans_ic_launcher"
+            android:icon="@drawable/stopwatch_trans"
             android:launchMode="singleTask"
             android:label="@string/stopwatch_app_name" >
             <intent-filter>
@@ -25,7 +25,7 @@
 
         <activity
             android:name="org.dwallach.xstopwatch.TimerActivity"
-            android:icon="@drawable/sandwatch_trans_ic_launcher"
+            android:icon="@drawable/sandwatch_trans"
             android:launchMode="singleTask"
             android:label="@string/timer_app_name" >
             <intent-filter>

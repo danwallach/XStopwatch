@@ -56,8 +56,8 @@ public class TimerState extends SharedState {
         // don't overwrite duration -- that's a user setting
         pauseDelta = startTime = 0;
 
-        updateBuzzHandler();
         super.reset();
+        updateBuzzHandler();
     }
 
     public void run() {
@@ -71,8 +71,8 @@ public class TimerState extends SharedState {
             startTime += currentTime() - pauseTime;
         }
 
-        updateBuzzHandler();
         super.run();
+        updateBuzzHandler();
     }
 
     public void pause() {
@@ -82,8 +82,8 @@ public class TimerState extends SharedState {
         pauseDelta = (pauseTime - startTime);
         if(pauseDelta > duration) pauseDelta = duration;
 
-        updateBuzzHandler();
         super.pause();
+        updateBuzzHandler();
     }
 
     public void restoreState(long duration, long pauseDelta, long startTime, boolean running, boolean reset, long updateTimestamp) {
@@ -152,10 +152,14 @@ public class TimerState extends SharedState {
             if(isRunning()) {
                 long timeNow = currentTime();
                 long delayTime = duration - timeNow + startTime;
-                Log.v(TAG, "setting buzz handler: " + delayTime + " ms in the future");
-                if (delayTime > 0)
+                if (delayTime > 0) {
+                    Log.v(TAG, "setting buzz handler: " + delayTime + " ms in the future");
                     buzzHandler.sendEmptyMessageDelayed(TimerActivity.MSG_BUZZ_TIME, delayTime);
+                } else {
+                    Log.v(TAG, "buzz handler in the past, not setting");
+                }
             } else {
+                Log.v(TAG, "removing buzz handler");
                 buzzHandler.removeMessages(TimerActivity.MSG_BUZZ_TIME);
             }
         }

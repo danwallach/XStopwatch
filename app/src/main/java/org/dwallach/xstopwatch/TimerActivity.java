@@ -187,7 +187,10 @@ public class TimerActivity extends Activity implements Observer {
      */
     private final Handler buzzHandler = new Handler() {
         private int counter = 0;
+
+        // four short buzzes within one second total time
         private long vibratorPattern[] = { 100, 200, 100, 200, 100, 200, 100 };
+
         @Override
         public void handleMessage(Message message) {
             counter++;

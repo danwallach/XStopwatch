@@ -124,4 +124,6 @@ abstract class SharedState extends Observable {
     abstract public int getNotificationID();
 
     abstract public Class getActivity();
+
+    abstract public int getIconID();
 }

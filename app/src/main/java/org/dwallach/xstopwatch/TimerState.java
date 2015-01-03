@@ -167,4 +167,8 @@ public class TimerState extends SharedState {
             }
         }
     }
+
+    public int getIconID() {
+        return R.drawable.sandwatch_selected_400;
+    }
 }

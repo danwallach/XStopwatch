@@ -12,6 +12,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -106,6 +108,8 @@ public class NotificationHelper implements Observer {
         Resources resources = context.getResources();
         int accentColor = resources.getColor(R.color.accent);
 
+        Bitmap bg = BitmapFactory.decodeResource(context.getResources(), state.getIconID());
+
         Notification notification =
                 new Notification.Builder(context)
 //                        .setStyle(new Notification.MediaStyle())   // this doesn't do anything, which is too bad; trying to add some style to the buttons
@@ -118,8 +122,9 @@ public class NotificationHelper implements Observer {
                         .addAction(playPauseIcon, timeString, clickPendingIntent)
                         .addAction(appIcon, title, launchPendingIntent)
                         .extend(new Notification.WearableExtender()
-                                                    .setHintHideIcon(true)
-                                                    .setContentAction(0))
+                                .setHintHideIcon(true)
+                                .setContentAction(0)
+                                .setBackground(bg))
                 .build();
 
 

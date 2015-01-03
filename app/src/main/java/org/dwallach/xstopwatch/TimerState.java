@@ -101,9 +101,8 @@ public class TimerState extends SharedState {
     }
 
     private static String timeString(long deltaTime, boolean subSeconds) {
-        int cent = (int)((deltaTime /     10L) % 100L);
-
         if(deltaTime < 0) deltaTime = 0;
+        int cent = (int)((deltaTime /     10L) % 100L);
 
         String secondsResult = DateUtils.formatElapsedTime(deltaTime / 1000);
         if(subSeconds)
@@ -153,6 +152,7 @@ public class TimerState extends SharedState {
             if(isRunning()) {
                 long timeNow = currentTime();
                 long delayTime = duration - timeNow + startTime;
+                Log.v(TAG, "setting buzz handler: " + delayTime + " ms in the future");
                 if (delayTime > 0)
                     buzzHandler.sendEmptyMessageDelayed(TimerActivity.MSG_BUZZ_TIME, delayTime);
             } else {

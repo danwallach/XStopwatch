@@ -187,6 +187,8 @@ public class TimerActivity extends Activity implements Observer {
             counter++;
 
             if(message.what == MSG_BUZZ_TIME) {
+                Log.v(TAG, "buzzing!");
+                TimerState.getSingleton().reset();
                 Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 vibrator.vibrate(vibratorPattern, -1, new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build());
             } else {

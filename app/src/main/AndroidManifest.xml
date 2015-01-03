@@ -20,6 +20,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="org.dwallach.xstopwatch.TimerActivity"
+            android:launchMode="singleTask"
+            android:label="@string/timer_app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".Receiver"
             android:enabled="true"
@@ -27,6 +38,8 @@
             <intent-filter>
                 <action android:name="intent.action.notification.stopwatch.click" />
                 <action android:name="org.dwallach.x.stopwatch.query" />
+                <action android:name="intent.action.notification.timer.click" />
+                <action android:name="org.dwallach.x.timer.query" />
             </intent-filter>
         </receiver>
 

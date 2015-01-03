@@ -1,6 +1,5 @@
 package org.dwallach.xstopwatch;
 
-import android.app.Activity;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -9,28 +8,39 @@ import java.util.Observable;
 /**
  * Created by dwallach on 12/30/14.
  */
-public class StopwatchState extends SharedState {
-    private final static String TAG = "StopwatchState";
+public class TimerState extends SharedState {
+    private final static String TAG = "TimerState";
 
-    private long priorTime;  // extra time to add in (accounting for prior pause/restart cycles)
+    private long pauseDelta;  // if the timer's not running, this says how far we got (i.e., we're at startTime + pauseDelta, and 0 <= pauseDelta <= duration)
     private long startTime;  // when the stopwatch started running
+    private long duration;   // when the timer ends (i.e., stop at startTime + duration, assuming it's running)
 
-    private StopwatchState() {
+    private TimerState() {
         super();
-        priorTime = 0;
+        pauseDelta = 0;
+        duration = 0;
         startTime = 0;
     }
 
-    private static StopwatchState singleton;
+    private static TimerState singleton;
 
-    public static StopwatchState getSingleton() {
+    public static TimerState getSingleton() {
         if(singleton == null)
-            singleton = new StopwatchState();
+            singleton = new TimerState();
         return singleton;
     }
 
-    public long getPriorTime() {
-        return priorTime;
+    public long getPauseDelta() {
+        return pauseDelta;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+        reset();
     }
 
     public long getStartTime() {
@@ -39,7 +49,9 @@ public class StopwatchState extends SharedState {
 
     public void reset() {
         Log.v(TAG, "reset");
-        priorTime = startTime = 0;
+
+        // don't overwrite duration -- that's a user setting
+        pauseDelta = startTime = 0;
 
         super.reset();
     }
@@ -56,14 +68,16 @@ public class StopwatchState extends SharedState {
         Log.v(TAG, "pause");
 
         long pauseTime = currentTime();
-        priorTime += (pauseTime - startTime);
+        pauseDelta = (pauseTime - startTime);
+        if(pauseDelta > duration) pauseDelta = duration;
 
         super.pause();
     }
 
-    public void restoreState(long priorTime, long startTime, boolean running, boolean reset, long updateTimestamp) {
+    public void restoreState(long duration, long pauseDelta, long startTime, boolean running, boolean reset, long updateTimestamp) {
         Log.v(TAG, "restoring state");
-        this.priorTime = priorTime;
+        this.duration = duration;
+        this.pauseDelta = pauseDelta;
         this.startTime = startTime;
         this.running = running;
         this.reset = reset;
@@ -84,32 +98,29 @@ public class StopwatchState extends SharedState {
 
     }
 
-    private static final String zeroString = timeString(0, true);
-    private static final String zeroStringNoSubSeconds = timeString(0, false);
-
     public String currentTimeString(boolean subSeconds) {
-        long priorTime = getPriorTime();
+        long pauseDelta = getPauseDelta();
+        long duration = getDuration();
         long startTime = getStartTime();
-        long currentTime = currentTime();
 
         if (isReset()) {
-            return (subSeconds)? zeroString: zeroStringNoSubSeconds;
+            return timeString(duration, subSeconds);
         } else if (!isRunning()) {
-            return timeString(priorTime, subSeconds);
+            return timeString(duration - pauseDelta, subSeconds);
         } else {
-            long timeNow = currentTime;
-            return timeString(timeNow - startTime + priorTime, subSeconds);
+            long timeNow = currentTime();
+            return timeString(duration - timeNow + startTime, subSeconds);
         }
     }
 
-    public static final String ACTION_NOTIFICATION_CLICK_STRING = "intent.action.notification.stopwatch.click";
+    public static final String ACTION_NOTIFICATION_CLICK_STRING = "intent.action.notification.timer.click";
 
     public String getActionNotificationClickString() {
         return ACTION_NOTIFICATION_CLICK_STRING;
     }
 
     public int getNotificationID() {
-        return 1;
+        return 2;
     }
 
     public Class getActivity() {

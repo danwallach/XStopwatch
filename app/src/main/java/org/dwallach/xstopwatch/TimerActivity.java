@@ -10,12 +10,13 @@ import android.widget.ImageButton;
 import java.util.Observable;
 import java.util.Observer;
 
-public class StopwatchActivity extends Activity implements Observer {
-    private static final String TAG = "StopwatchActivity";
+public class TimerActivity extends Activity implements Observer {
+    private static final String TAG = "TimerActivity";
 
-    private StopwatchState stopwatchState = StopwatchState.getSingleton();
+    private TimerState timerState = TimerState.getSingleton();
     private ImageButton resetButton;
     private ImageButton playButton;
+    private ImageButton setButton;
     private NotificationHelper notificationHelper;
     private StopwatchText stopwatchText;
 
@@ -24,7 +25,7 @@ public class StopwatchActivity extends Activity implements Observer {
         super.onCreate(savedInstanceState);
 
         Log.v(TAG, "onCreate");
-        setContentView(R.layout.activity_stopwatch);
+        setContentView(R.layout.activity_timer);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
@@ -32,21 +33,22 @@ public class StopwatchActivity extends Activity implements Observer {
                 Log.v(TAG, "onLayoutInflated");
                 resetButton = (ImageButton) stub.findViewById(R.id.resetButton);
                 playButton = (ImageButton) stub.findViewById(R.id.playButton);
+                setButton = (ImageButton) stub.findViewById(R.id.setButton);
                 stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
 
                 // bring in saved preferences
-                PreferencesHelper.loadPreferences(StopwatchActivity.this);
+                PreferencesHelper.loadPreferences(TimerActivity.this);
 
                 // now that we've loaded the state, we know whether we're playing or paused
                 setPlayButtonIcon();
 
                 // set up notification helper, and use this as a proxy for whether
-                // or not we need to set up everybody who pays attention to the stopwatchState
+                // or not we need to set up everybody who pays attention to the timerState
                 if(notificationHelper == null) {
-                    notificationHelper = new NotificationHelper(StopwatchActivity.this,
-                            R.drawable.stopwatch_trans_ic_launcher,
-                            getResources().getString(R.string.stopwatch_app_name),
-                            stopwatchState);
+                    notificationHelper = new NotificationHelper(TimerActivity.this,
+                            R.drawable.sandwatch_trans_ic_launcher,
+                            getResources().getString(R.string.timer_app_name),
+                            timerState);
 
                     setStopwatchObservers(true);
                 }
@@ -54,16 +56,16 @@ public class StopwatchActivity extends Activity implements Observer {
                 resetButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        stopwatchState.reset();
-                        PreferencesHelper.savePreferences(StopwatchActivity.this);
+                        timerState.reset();
+                        PreferencesHelper.savePreferences(TimerActivity.this);
                     }
                 });
 
                 playButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        stopwatchState.click();
-                        PreferencesHelper.savePreferences(StopwatchActivity.this);
+                        timerState.click();
+                        PreferencesHelper.savePreferences(TimerActivity.this);
                     }
                 });
             }
@@ -71,21 +73,21 @@ public class StopwatchActivity extends Activity implements Observer {
     }
 
     /**
-     * install the observers that care about the stopwatchState: "this", which updates the
+     * install the observers that care about the timerState: "this", which updates the
      * visible UI parts of the activity, and the notificationHelper, which deals with the popup
      * notifications elsewhere
      *
      * @param includeActivity If the current activity isn't visible, then make this false and it won't be notified
      */
     private void setStopwatchObservers(boolean includeActivity) {
-        stopwatchState.deleteObservers();
+        timerState.deleteObservers();
         if(notificationHelper != null)
-            stopwatchState.addObserver(notificationHelper);
+            timerState.addObserver(notificationHelper);
         if(includeActivity) {
-            stopwatchState.addObserver(this);
+            timerState.addObserver(this);
 
             if (stopwatchText != null)
-                stopwatchState.addObserver(stopwatchText);
+                timerState.addObserver(stopwatchText);
         }
     }
 
@@ -95,7 +97,7 @@ public class StopwatchActivity extends Activity implements Observer {
 
         Log.v(TAG, "onStart");
 
-        stopwatchState.setVisible(true);
+        timerState.setVisible(true);
         setStopwatchObservers(true);
     }
 
@@ -105,7 +107,7 @@ public class StopwatchActivity extends Activity implements Observer {
 
         Log.v(TAG, "onResume");
 
-        stopwatchState.setVisible(true);
+        timerState.setVisible(true);
         setStopwatchObservers(true);
     }
 
@@ -115,7 +117,7 @@ public class StopwatchActivity extends Activity implements Observer {
 
         Log.v(TAG, "onPause");
 
-        stopwatchState.setVisible(false);
+        timerState.setVisible(false);
         setStopwatchObservers(false);
     }
 
@@ -127,7 +129,7 @@ public class StopwatchActivity extends Activity implements Observer {
     }
 
     private void setPlayButtonIcon() {
-        if (stopwatchState.isRunning() && playButton != null)
+        if (timerState.isRunning() && playButton != null)
             playButton.setImageResource(android.R.drawable.ic_media_pause);
         else
             playButton.setImageResource(android.R.drawable.ic_media_play);

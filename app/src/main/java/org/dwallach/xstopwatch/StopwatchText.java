@@ -21,11 +21,13 @@ public class StopwatchText extends SurfaceView implements Observer {
     private final static String TAG = "StopwatchText";
 
     private boolean visible = true;
-    private StopwatchState state = StopwatchState.getSingleton();
+    private SharedState state;
     Paint textPaint;
 
-    public StopwatchText(Context context, AttributeSet attrs) {
+    public StopwatchText(Context context, AttributeSet attrs, SharedState state) {
         super(context, attrs);
+
+        this.state = state;
 
         setWillNotDraw(false);
 

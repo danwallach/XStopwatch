@@ -16,24 +16,24 @@ import java.util.Observer;
 /**
  * Created by dwallach on 12/31/14.
  */
-public class StopwatchNotificationHelper implements Observer {
-    private final static String TAG = "StopwatchNotificationHelper";
+public class NotificationHelper implements Observer {
+    private final static String TAG = "NotificationHelper";
 
-    private final int notificationID = 001;
+    private int notificationID;
     private int appIcon;
     private String title;
     private Context context;
     private PendingIntent clickPendingIntent;
     private PendingIntent launchPendingIntent;
+    private SharedState state;
 
-    public static final String ACTION_NOTIFICATION_CLICK = "intent.action.notification.stopwatch.click";
-    private static final int MSG_UPDATE_TIME = 2;
+    private static final int MSG_UPDATE_TIME = 3; // whatever
 
     /**
      * Handler to tick once every second when the timer is running
      * and we need to show the notification.
      */
-    private final Handler mUpdateTimeHandler = new Handler() {
+    private final Handler updateTimeHandler = new Handler() {
         private int counter = 0;
         @Override
         public void handleMessage(Message message) {
@@ -42,17 +42,19 @@ public class StopwatchNotificationHelper implements Observer {
             if(message.what == MSG_UPDATE_TIME) {
                 if(counter % 60 == 1)
                     Log.v(TAG, "Time update (% 60)");
-                update(StopwatchState.getSingleton(), null);
+                update(state, null);
             } else {
                 Log.e(TAG, "Unknown message: " + message.toString());
             }
         }
     };
 
-    public StopwatchNotificationHelper(Context context, int appIcon, String title) {
+    public NotificationHelper(Context context, int appIcon, String title, SharedState state) {
         this.context = context;
         this.appIcon = appIcon;
         this.title = title;
+        this.state = state;
+        this.notificationID = state.getNotificationID();
     }
 
 
@@ -91,10 +93,10 @@ public class StopwatchNotificationHelper implements Observer {
         // http://stackoverflow.com/questions/24494663/how-to-add-button-directly-on-notification-on-android-wear
 
         if(clickPendingIntent == null)
-            clickPendingIntent =  PendingIntent.getBroadcast(context, 0, new Intent(ACTION_NOTIFICATION_CLICK), PendingIntent.FLAG_UPDATE_CURRENT);
+            clickPendingIntent =  PendingIntent.getBroadcast(context, 0, new Intent(state.getActionNotificationClickString()), PendingIntent.FLAG_UPDATE_CURRENT);
 
         if(launchPendingIntent == null)
-            launchPendingIntent = PendingIntent.getActivity(context, 1, new Intent(context, StopwatchActivity.class), 0);
+            launchPendingIntent = PendingIntent.getActivity(context, 1, new Intent(context, state.getActivity()), 0);
 
         int playPauseIcon = (isRunning) ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play;
 
@@ -127,16 +129,16 @@ public class StopwatchNotificationHelper implements Observer {
         if(isRunning) {
             long timeMs = System.currentTimeMillis();
             long delayMs = 1000 - (timeMs % 1000);
-            mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
+            updateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
         }
     }
 
     @Override
     public void update(Observable observable, Object data) {
 //        Log.v(TAG, "updating notification state");
-        StopwatchState stopwatchState = (StopwatchState) observable;
+        SharedState sharedState = (SharedState) observable;
 
-        if(stopwatchState.isVisible() || stopwatchState.isReset()) kill();
-        else notify(stopwatchState.currentTimeString(false), stopwatchState.isRunning());
+        if(sharedState.isVisible() || sharedState.isReset()) kill();
+        else notify(sharedState.currentTimeString(false), sharedState.isRunning());
     }
 }

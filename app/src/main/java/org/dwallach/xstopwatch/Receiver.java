@@ -12,16 +12,26 @@ public class Receiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.v(TAG, "got intent: " + intent.toString());
 
-        if(intent.getAction().equals(StopwatchNotificationHelper.ACTION_NOTIFICATION_CLICK)) {
-            Log.v(TAG, "remote click");
+        String action = intent.getAction();
+
+        if(action.equals(StopwatchState.ACTION_NOTIFICATION_CLICK_STRING)) {
+            Log.v(TAG, "stopwatch remote click");
             StopwatchState.getSingleton().click();
             PreferencesHelper.savePreferences(context);
             return;
         }
 
-        if(intent.getAction().equals(Constants.stopwatchQueryIntent)) {
+        if(action.equals(TimerState.ACTION_NOTIFICATION_CLICK_STRING)) {
+            Log.v(TAG, "timer remote click");
+            TimerState.getSingleton().click();
+            PreferencesHelper.savePreferences(context);
+            return;
+        }
+
+        if(action.equals(Constants.stopwatchQueryIntent) || action.equals(Constants.timerQueryIntent)) {
             Log.v(TAG, "remote query!");
-            PreferencesHelper.broadcastPreferences(context); // triggers a broadcast
+            PreferencesHelper.broadcastPreferences(context);
+            return;
         }
     }
 }

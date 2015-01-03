@@ -33,6 +33,7 @@ public class StopwatchActivity extends Activity implements Observer {
                 resetButton = (ImageButton) stub.findViewById(R.id.resetButton);
                 playButton = (ImageButton) stub.findViewById(R.id.playButton);
                 stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
+                stopwatchText.setSharedState(stopwatchState);
 
                 // bring in saved preferences
                 PreferencesHelper.loadPreferences(StopwatchActivity.this);

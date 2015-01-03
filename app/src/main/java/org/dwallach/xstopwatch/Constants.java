@@ -11,7 +11,6 @@ public class Constants {
     public static final String prefStopwatchUpdateTimestamp = "updateTimestamp";
 
     public static final String sharedPrefsStopwatch = "org.dwallach.x.stopwatch.prefs";
-
     public static final String stopwatchUpdateIntent = "org.dwallach.x.stopwatch.update";
     public static final String stopwatchQueryIntent = "org.dwallach.x.stopwatch.query";
 
@@ -23,7 +22,6 @@ public class Constants {
     public static final String prefTimerUpdateTimestamp = "updateTimestamp";
 
     public static final String sharedPrefsTimer = "org.dwallach.x.timer.prefs";
-
     public static final String timerUpdateIntent = "org.dwallach.x.timer.update";
     public static final String timerQueryIntent = "org.dwallach.x.timer.query";
 }

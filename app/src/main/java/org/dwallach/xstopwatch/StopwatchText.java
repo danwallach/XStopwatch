@@ -24,10 +24,8 @@ public class StopwatchText extends SurfaceView implements Observer {
     private SharedState state;
     Paint textPaint;
 
-    public StopwatchText(Context context, AttributeSet attrs, SharedState state) {
+    public StopwatchText(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        this.state = state;
 
         setWillNotDraw(false);
 
@@ -43,13 +41,18 @@ public class StopwatchText extends SurfaceView implements Observer {
         super(context);
     }
 
+    public void setSharedState(SharedState sharedState) {
+        this.state = sharedState;
+    }
+
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         visible = (visibility == VISIBLE);
 
         Log.v(TAG, "visible: " + visible);
 
-        state.setVisible(visible);
+        if(state != null)
+            state.setVisible(visible);
         if(visible) invalidate();
     }
 
@@ -80,6 +83,11 @@ public class StopwatchText extends SurfaceView implements Observer {
     public void onDraw(Canvas canvas) {
 //        Log.v(TAG, "onDraw -- visible: " + visible + ", running: " + isRunning);
         drawCounter++;
+
+        if(state == null) {
+            Log.e(TAG, "onDraw: no state yet");
+            return;
+        }
 
         String result = state.currentTimeString(true);
 

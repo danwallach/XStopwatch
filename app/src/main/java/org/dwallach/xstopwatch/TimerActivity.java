@@ -1,12 +1,22 @@
 package org.dwallach.xstopwatch;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.TimePickerDialog;
+import android.media.AudioAttributes;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Vibrator;
 import android.support.wearable.view.WatchViewStub;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TimePicker;
 
+import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,6 +29,33 @@ public class TimerActivity extends Activity implements Observer {
     private ImageButton setButton;
     private NotificationHelper notificationHelper;
     private StopwatchText stopwatchText;
+
+    // see http://developer.android.com/guide/topics/ui/controls/pickers.html
+    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+        private TimerState timerState = TimerState.getSingleton();
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            long duration = timerState.getDuration(); // in milliseconds
+            int minute = (int) ((duration / 60000) % 60);
+            int hour = (int) (duration / 3600000);
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute, true);
+        }
+
+        public void onTimeSet(TimePicker view, int hour, int minute) {
+            // Do something with the time chosen by the user
+            timerState.setDuration(hour * 3600000 + minute * 60000);
+        }
+    }
+
+    // call to this specified in the layout xml files
+    public void showTimePickerDialog(View v) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getFragmentManager(), "timePicker");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +72,8 @@ public class TimerActivity extends Activity implements Observer {
                 playButton = (ImageButton) stub.findViewById(R.id.playButton);
                 setButton = (ImageButton) stub.findViewById(R.id.setButton);
                 stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
+                stopwatchText.setSharedState(timerState);
+                timerState.setBuzzHandler(buzzHandler);
 
                 // bring in saved preferences
                 PreferencesHelper.loadPreferences(TimerActivity.this);
@@ -134,4 +173,25 @@ public class TimerActivity extends Activity implements Observer {
         else
             playButton.setImageResource(android.R.drawable.ic_media_play);
     }
+
+    public static final int MSG_BUZZ_TIME = 4; // whatever
+
+    /**
+     * Handler to vibrate when the timer hits zero
+     */
+    private final Handler buzzHandler = new Handler() {
+        private int counter = 0;
+        private long vibratorPattern[] = { 100, 200, 100, 200, 100, 200, 100 };
+        @Override
+        public void handleMessage(Message message) {
+            counter++;
+
+            if(message.what == MSG_BUZZ_TIME) {
+                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                vibrator.vibrate(vibratorPattern, -1, new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build());
+            } else {
+                Log.e(TAG, "Unknown message: " + message.toString());
+            }
+        }
+    };
 }

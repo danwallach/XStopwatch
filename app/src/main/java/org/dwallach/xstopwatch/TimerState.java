@@ -1,5 +1,8 @@
 package org.dwallach.xstopwatch;
 
+import android.os.Handler;
+import android.os.Message;
+import android.os.Vibrator;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -53,6 +56,7 @@ public class TimerState extends SharedState {
         // don't overwrite duration -- that's a user setting
         pauseDelta = startTime = 0;
 
+        updateBuzzHandler();
         super.reset();
     }
 
@@ -61,6 +65,7 @@ public class TimerState extends SharedState {
 
         startTime = currentTime();
 
+        updateBuzzHandler();
         super.run();
     }
 
@@ -71,6 +76,7 @@ public class TimerState extends SharedState {
         pauseDelta = (pauseTime - startTime);
         if(pauseDelta > duration) pauseDelta = duration;
 
+        updateBuzzHandler();
         super.pause();
     }
 
@@ -84,11 +90,14 @@ public class TimerState extends SharedState {
         this.updateTimestamp = updateTimestamp;
         initialized = true;
 
+        updateBuzzHandler();
         pingObservers();
     }
 
     private static String timeString(long deltaTime, boolean subSeconds) {
         int cent = (int)((deltaTime /     10L) % 100L);
+
+        if(deltaTime < 0) deltaTime = 0;
 
         String secondsResult = DateUtils.formatElapsedTime(deltaTime / 1000);
         if(subSeconds)
@@ -125,5 +134,24 @@ public class TimerState extends SharedState {
 
     public Class getActivity() {
         return StopwatchActivity.class;
+    }
+
+    private Handler buzzHandler;
+
+    public void setBuzzHandler(Handler buzzHandler) {
+        this.buzzHandler = buzzHandler;
+    }
+
+    private void updateBuzzHandler() {
+        if(buzzHandler != null) {
+            if(isRunning()) {
+                long timeNow = currentTime();
+                long delayTime = duration - timeNow + startTime;
+                if (delayTime > 0)
+                    buzzHandler.sendEmptyMessageDelayed(TimerActivity.MSG_BUZZ_TIME, delayTime);
+            } else {
+                buzzHandler.removeMessages(TimerActivity.MSG_BUZZ_TIME);
+            }
+        }
     }
 }

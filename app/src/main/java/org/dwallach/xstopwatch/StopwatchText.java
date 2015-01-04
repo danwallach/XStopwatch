@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -45,6 +47,28 @@ public class StopwatchText extends SurfaceView implements Observer {
         super(context);
     }
 
+    static final int MSG_UPDATE_TIME = 0;
+
+    /** Handler to update the time once a second in interactive mode. */
+    private final Handler updateTimeHandler = new Handler() {
+        @Override
+        public void handleMessage(Message message) {
+            switch (message.what) {
+                case MSG_UPDATE_TIME:
+                    invalidate();
+                    if (visible && state.isRunning()) {
+                        long timeMs = System.currentTimeMillis();
+                        long delayMs = 1000 - (timeMs % 1000);
+                        updateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
+                    } else {
+                        Log.v(TAG, shortName + "time handler complete");
+                    }
+                    break;
+            }
+        }
+    };
+
+
     public void setSharedState(SharedState sharedState) {
         this.state = sharedState;
         this.shortName = sharedState.getShortName();
@@ -58,7 +82,12 @@ public class StopwatchText extends SurfaceView implements Observer {
 
         if(state != null)
             state.setVisible(visible);
-        if(visible) invalidate();
+
+        if(visible) {
+            updateTimeHandler.sendEmptyMessage(MSG_UPDATE_TIME); // now, rather than later
+        } else {
+            updateTimeHandler.removeMessages(MSG_UPDATE_TIME);
+        }
     }
 
     private float textX, textY;
@@ -92,31 +121,25 @@ public class StopwatchText extends SurfaceView implements Observer {
 
     @Override
     public void onDraw(Canvas canvas) {
-//        Log.v(TAG, "onDraw -- visible: " + visible + ", running: " + isRunning);
-        drawCounter++;
+//        Log.v(TAG, shortName + "onDraw -- visible: " + visible + ", running: " + state.isRunning());
 
         if(state == null) {
             Log.e(TAG, shortName + "onDraw: no state yet");
             return;
         }
 
-        String result = state.currentTimeString(true);
+        String result = state.currentTimeString(false);
 
 //        Log.v(TAG, "update text to: " + result);
 
         if(width == 0 || height == 0) {
-            if(drawCounter % 1000 == 1)
-                Log.e(TAG, shortName + "zero-width or zero-height, can't draw yet");
+            Log.e(TAG, shortName + "zero-width or zero-height, can't draw yet");
             return;
         }
 
         // clear the screen
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
         canvas.drawText(result, textX, textY, textPaint);
-
-        if(visible & state.isRunning()) {
-            invalidate();
-        }
     }
 
 
@@ -124,6 +147,6 @@ public class StopwatchText extends SurfaceView implements Observer {
     public void update(Observable observable, Object data) {
         // something changed in the StopwatchState...
         Log.v(TAG, shortName + "update: invalidating text");
-        invalidate();
+        updateTimeHandler.sendEmptyMessage(MSG_UPDATE_TIME); // now, rather than later
     }
 }

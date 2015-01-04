@@ -119,4 +119,8 @@ public class StopwatchState extends SharedState {
     public int getIconID() {
         return R.drawable.stopwatch_selected_400;
     }
+
+    public String getShortName() {
+        return "[Stopwatch] ";
+    }
 }

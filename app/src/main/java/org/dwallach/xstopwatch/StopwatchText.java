@@ -25,6 +25,7 @@ public class StopwatchText extends SurfaceView implements Observer {
 
     private boolean visible = true;
     private SharedState state;
+    private String shortName;
     Paint textPaint;
 
     public StopwatchText(Context context, AttributeSet attrs) {
@@ -46,13 +47,14 @@ public class StopwatchText extends SurfaceView implements Observer {
 
     public void setSharedState(SharedState sharedState) {
         this.state = sharedState;
+        this.shortName = sharedState.getShortName();
     }
 
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         visible = (visibility == VISIBLE);
 
-        Log.v(TAG, "visible: " + visible);
+        Log.v(TAG, shortName + "visible: " + visible);
 
         if(state != null)
             state.setVisible(visible);
@@ -63,12 +65,12 @@ public class StopwatchText extends SurfaceView implements Observer {
 
     @Override
     protected void onSizeChanged (int w, int h, int oldw, int oldh) {
-        Log.v(TAG, "size change: " + w + ", " + h);
+        Log.v(TAG, shortName + "size change: " + w + ", " + h);
         this.width = w;
         this.height = h;
         int textSize = (h*3)/5;
 
-        Log.v(TAG, "new text size: " + textSize);
+        Log.v(TAG, shortName + "new text size: " + textSize);
 
         textPaint.setTextSize(textSize);
         //
@@ -77,6 +79,12 @@ public class StopwatchText extends SurfaceView implements Observer {
         Paint.FontMetrics metrics = textPaint.getFontMetrics();
         textY = -metrics.ascent;
         textX = w/2;
+
+        //
+        // In some weird cases, we get an onSizeChanged but not an onVisibilityChanged
+        // event, even though visibility did change; Lovely.
+        //
+        onVisibilityChanged(null, VISIBLE);
     }
 
     private int width, height, drawCounter;
@@ -88,7 +96,7 @@ public class StopwatchText extends SurfaceView implements Observer {
         drawCounter++;
 
         if(state == null) {
-            Log.e(TAG, "onDraw: no state yet");
+            Log.e(TAG, shortName + "onDraw: no state yet");
             return;
         }
 
@@ -98,7 +106,7 @@ public class StopwatchText extends SurfaceView implements Observer {
 
         if(width == 0 || height == 0) {
             if(drawCounter % 1000 == 1)
-                Log.e(TAG, "zero-width or zero-height, can't draw yet");
+                Log.e(TAG, shortName + "zero-width or zero-height, can't draw yet");
             return;
         }
 
@@ -115,7 +123,7 @@ public class StopwatchText extends SurfaceView implements Observer {
     @Override
     public void update(Observable observable, Object data) {
         // something changed in the StopwatchState...
-        Log.v(TAG, "update: invalidating text");
+        Log.v(TAG, shortName + "update: invalidating text");
         invalidate();
     }
 }

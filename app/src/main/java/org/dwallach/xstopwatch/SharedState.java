@@ -41,7 +41,7 @@ abstract class SharedState extends Observable {
     }
 
     public void setVisible(boolean visible) {
-        Log.v(TAG, "visible: " + visible);
+        Log.v(TAG, getShortName() + "visible: " + visible);
         this.visible = visible;
         initialized = true;
 
@@ -66,7 +66,7 @@ abstract class SharedState extends Observable {
     }
 
     public void reset() {
-        Log.v(TAG, "reset");
+        Log.v(TAG, getShortName() + "reset");
         running = false;
         reset = true;
         initialized = true;
@@ -76,7 +76,7 @@ abstract class SharedState extends Observable {
     }
 
     public void run() {
-        Log.v(TAG, "run");
+        Log.v(TAG, getShortName() + "run");
 
         reset = false;
         running = true;
@@ -87,7 +87,7 @@ abstract class SharedState extends Observable {
     }
 
     public void pause() {
-        Log.v(TAG, "pause");
+        Log.v(TAG, getShortName() + "pause");
 
         running = false;
         initialized = true;
@@ -97,7 +97,7 @@ abstract class SharedState extends Observable {
     }
 
     public void click() {
-        Log.v(TAG, "click");
+        Log.v(TAG, getShortName() + "click");
         if (isRunning())
             pause();
         else
@@ -106,11 +106,11 @@ abstract class SharedState extends Observable {
 
     public void pingObservers() {
         // this incantation will make observers elsewhere aware that there's new content
-        Log.v(TAG, "pinging");
+        Log.v(TAG, getShortName() + "pinging");
         setChanged();
         notifyObservers();
         clearChanged();
-        Log.v(TAG, "ping complete");
+        Log.v(TAG, getShortName() + "ping complete");
     }
 
     abstract public String currentTimeString(boolean subSeconds);
@@ -126,4 +126,6 @@ abstract class SharedState extends Observable {
     abstract public Class getActivity();
 
     abstract public int getIconID();
+
+    abstract public String getShortName();
 }

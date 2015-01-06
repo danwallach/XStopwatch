@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import java.util.Observable;
@@ -38,21 +39,21 @@ public class NotificationHelper implements Observer {
      * Handler to tick once every second when the timer is running
      * and we need to show the notification.
      */
-    private final Handler updateTimeHandler = new Handler() {
-        private int counter = 0;
-        @Override
-        public void handleMessage(Message message) {
-            counter++;
-
-            if(message.what == MSG_UPDATE_TIME) {
-                if(counter % 60 == 1)
-                    Log.v(TAG, "Time update (% 60)");
-                update(state, null);
-            } else {
-                Log.e(TAG, "Unknown message: " + message.toString());
-            }
-        }
-    };
+//    private final Handler updateTimeHandler = new Handler() {
+//        private int counter = 0;
+//        @Override
+//        public void handleMessage(Message message) {
+//            counter++;
+//
+//            if(message.what == MSG_UPDATE_TIME) {
+//                if(counter % 60 == 1)
+//                    Log.v(TAG, "Time update (% 60)");
+//                update(state, null);
+//            } else {
+//                Log.e(TAG, "Unknown message: " + message.toString());
+//            }
+//        }
+//    };
 
     public NotificationHelper(Context context, int appIcon, String title, SharedState state) {
         this.context = context;
@@ -87,7 +88,15 @@ public class NotificationHelper implements Observer {
         }
     }
 
-    public void notify(String timeString, boolean isRunning) {
+    private void initIntents() {
+        if(clickPendingIntent == null)
+            clickPendingIntent =  PendingIntent.getBroadcast(context, 0, new Intent(state.getActionNotificationClickString()), PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if(launchPendingIntent == null)
+            launchPendingIntent = PendingIntent.getActivity(context, 1, new Intent(context, state.getActivity()), 0);
+    }
+
+    public void notify(long eventTime, boolean isRunning) {
         // Google docs for this:
         // http://developer.android.com/training/notify-user/build-notification.html
 
@@ -97,34 +106,36 @@ public class NotificationHelper implements Observer {
         // This seems to explain what I want to do:
         // http://stackoverflow.com/questions/24494663/how-to-add-button-directly-on-notification-on-android-wear
 
-        if(clickPendingIntent == null)
-            clickPendingIntent =  PendingIntent.getBroadcast(context, 0, new Intent(state.getActionNotificationClickString()), PendingIntent.FLAG_UPDATE_CURRENT);
-
-        if(launchPendingIntent == null)
-            launchPendingIntent = PendingIntent.getActivity(context, 1, new Intent(context, state.getActivity()), 0);
-
-        int playPauseIcon = (isRunning) ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play;
+        initIntents();
 
         Resources resources = context.getResources();
-        int accentColor = resources.getColor(R.color.accent);
+//        int accentColor = resources.getColor(R.color.accent);
 
         Bitmap bg = BitmapFactory.decodeResource(context.getResources(), state.getIconID());
 
-        Notification notification =
-                new Notification.Builder(context)
-//                        .setStyle(new Notification.MediaStyle())   // this doesn't do anything, which is too bad; trying to add some style to the buttons
-                        .setOngoing(true)
-                        .setSmallIcon(appIcon)
-                        .setContentTitle(timeString)
-//                        .setContentTitle(title)
-//                        .setContentText(timeString)
-//                        .setColor(accentColor)                     // this doesn't do anything either; doesn't appear to be any way to customize the colors!
-                        .addAction(playPauseIcon, timeString, clickPendingIntent)
-                        .addAction(appIcon, title, launchPendingIntent)
-                        .extend(new Notification.WearableExtender()
-                                .setHintHideIcon(true)
-                                .setContentAction(0)
-                                .setBackground(bg))
+        Notification.Builder builder = new Notification.Builder(context);
+
+        if(!isRunning) {
+            String timeString = state.toString();
+            builder.addAction(android.R.drawable.ic_media_play, "", clickPendingIntent)
+                    .setContentTitle(timeString);
+        }  else {
+            builder.addAction(android.R.drawable.ic_media_pause, "", clickPendingIntent)
+                    .setWhen(eventTime)
+                    .setUsesChronometer(true)
+                    .setShowWhen(true);
+        }
+
+        Notification notification = builder
+                .setOngoing(true)
+                .setLocalOnly(true)
+                .setSmallIcon(appIcon)
+                .addAction(appIcon, title, launchPendingIntent)
+                .extend(new Notification.WearableExtender()
+                        .setHintHideIcon(true)
+                        .setContentAction(0)
+                        .setCustomSizePreset(Notification.WearableExtender.SIZE_LARGE)
+                        .setBackground(bg))
                 .build();
 
 
@@ -134,11 +145,11 @@ public class NotificationHelper implements Observer {
 
         // if we're running, then we'll need to update the counter in a second, so we'll do
         // this delayed message thing
-        if(isRunning) {
-            long timeMs = System.currentTimeMillis();
-            long delayMs = 1000 - (timeMs % 1000);
-            updateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
-        }
+//        if(isRunning) {
+//            long timeMs = System.currentTimeMillis();
+//            long delayMs = 1000 - (timeMs % 1000);
+//            updateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
+//        }
     }
 
     @Override
@@ -147,6 +158,6 @@ public class NotificationHelper implements Observer {
         SharedState sharedState = (SharedState) observable;
 
         if(sharedState.isVisible() || sharedState.isReset()) kill();
-        else notify(sharedState.currentTimeString(false), sharedState.isRunning());
+        else notify(sharedState.eventTime(), sharedState.isRunning());
     }
 }

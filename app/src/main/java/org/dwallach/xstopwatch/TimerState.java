@@ -18,8 +18,8 @@ public class TimerState extends SharedState {
     private final static String TAG = "TimerState";
 
     private long pauseDelta;  // if the timer's not running, this says how far we got (i.e., we're at startTime + pauseDelta, and 0 <= pauseDelta <= duration)
-    private long startTime;  // when the stopwatch started running
-    private long duration;   // when the timer ends (i.e., stop at startTime + duration, assuming it's running)
+    private long startTime;  // when the timer started running
+    private long duration;   // when the timer ends (i.e., the timer completes at startTime + duration, assuming it's running)
 
     private TimerState() {
         super();
@@ -66,6 +66,8 @@ public class TimerState extends SharedState {
     public void run() {
         Log.v(TAG, "run");
 
+        if(duration == 0) return; // don't do anything unless there's a non-zero duration
+
         if(isReset())
             startTime = currentTime();
         else {
@@ -107,6 +109,10 @@ public class TimerState extends SharedState {
         if(deltaTime < 0) deltaTime = 0;
         int cent = (int)((deltaTime /     10L) % 100L);
 
+        // Hopefully this gives us a nicely internationalized version of the elapsed time.
+        // In US-English, we get MM:SS or H:MM:SS. I don't know about elsewhere. Maybe
+        // in French it will get HhMMmSSs (e.g., 5h23m22s). If not, that's Android's problem,
+        // not our problem.
         String secondsResult = DateUtils.formatElapsedTime(deltaTime / 1000);
         if(subSeconds)
             return String.format("%s.%02d", secondsResult, cent);
@@ -115,19 +121,17 @@ public class TimerState extends SharedState {
 
     }
 
-    public String currentTimeString(boolean subSeconds) {
-        long pauseDelta = getPauseDelta();
-        long duration = getDuration();
-        long startTime = getStartTime();
+    @Override
+    public long eventTime() {
+        // IF RUNNING, this time will be consistent with System.currentTimeMillis(), i.e., in GMT.
+        // IF PAUSED, this time will be relative to zero and will be what should be displayed.
 
-        if (isReset()) {
-            return timeString(duration, subSeconds);
-        } else if (!isRunning()) {
-            return timeString(duration - pauseDelta, subSeconds);
-        } else {
-            long timeNow = currentTime();
-            return timeString(duration - timeNow + startTime, subSeconds);
-        }
+        if(reset) return duration;
+        if(!running) return duration - pauseDelta;
+
+        // running
+        return duration + startTime;
+
     }
 
     public static final String ACTION_NOTIFICATION_CLICK_STRING = "intent.action.notification.timer.click";

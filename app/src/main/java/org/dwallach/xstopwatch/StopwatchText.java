@@ -22,6 +22,13 @@ import android.view.View;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * This class acts something like android.widget.Chronometer, but that class only knows
+ * how to count up, and we need to be able to go up (for a stopwatch) and down (for a timer).
+ *
+ * When running, the text is updated once a second, with text derived from the SharedState
+ * (which might be either StopwatchState or TimerState).
+ */
 public class StopwatchText extends SurfaceView implements Observer {
     private final static String TAG = "StopwatchText";
 
@@ -116,7 +123,7 @@ public class StopwatchText extends SurfaceView implements Observer {
         onVisibilityChanged(null, VISIBLE);
     }
 
-    private int width, height, drawCounter;
+    private int width, height;
 
 
     @Override
@@ -128,7 +135,7 @@ public class StopwatchText extends SurfaceView implements Observer {
             return;
         }
 
-        String result = state.currentTimeString(false);
+        String result = state.toString();
 
 //        Log.v(TAG, "update text to: " + result);
 

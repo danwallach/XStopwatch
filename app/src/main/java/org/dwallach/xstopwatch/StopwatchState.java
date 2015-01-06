@@ -12,7 +12,7 @@ import android.util.Log;
 public class StopwatchState extends SharedState {
     private final static String TAG = "StopwatchState";
 
-    private long priorTime;  // extra time to add in (accounting for prior pause/restart cycles)
+    private long priorTime;  // extra time to add in (accounting for prior pause/restart cycles) -- analogous to the "base" time in android.widget.Chronometer
     private long startTime;  // when the stopwatch started running
 
     private StopwatchState() {
@@ -73,32 +73,15 @@ public class StopwatchState extends SharedState {
         pingObservers();
     }
 
-    private static String timeString(long deltaTime, boolean subSeconds) {
-        int cent = (int)((deltaTime /     10L) % 100L);
+    @Override
+    public long eventTime() {
+        // IF RUNNING, this time will be consistent with System.currentTimeMillis(), i.e., in GMT.
+        // IF PAUSED, this time will be relative to zero and will be what should be displayed.
 
-        String secondsResult = DateUtils.formatElapsedTime(deltaTime / 1000);
-        if(subSeconds)
-            return String.format("%s.%02d", secondsResult, cent);
-        else
-            return secondsResult;
-
-    }
-
-    private static final String zeroString = timeString(0, true);
-    private static final String zeroStringNoSubSeconds = timeString(0, false);
-
-    public String currentTimeString(boolean subSeconds) {
-        long priorTime = getPriorTime();
-        long startTime = getStartTime();
-        long currentTime = currentTime();
-
-        if (isReset()) {
-            return (subSeconds)? zeroString: zeroStringNoSubSeconds;
-        } else if (!isRunning()) {
-            return timeString(priorTime, subSeconds);
+        if(running) {
+            return startTime - priorTime;
         } else {
-            long timeNow = currentTime;
-            return timeString(timeNow - startTime + priorTime, subSeconds);
+            return priorTime;
         }
     }
 

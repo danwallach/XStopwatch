@@ -113,10 +113,35 @@ abstract class SharedState extends Observable {
         Log.v(TAG, getShortName() + "ping complete");
     }
 
-    abstract public String currentTimeString(boolean subSeconds);
+    /**
+     * Return the time of either when the stopwatch began or when the countdown ends.
+     * IF RUNNING, this time will be consistent with System.currentTimeMillis(), i.e., in GMT.
+     * IF PAUSED, this time will be relative to zero and will be what should be displayed.
+     * Make sure to call isRunning() to know how to interpret this result.
+     * @return GMT time in milliseconds
+     */
+    abstract public long eventTime();
+
+    /**
+     * This converts an absolute time, as returned by eventTime, to a relative time
+     * that might be displayed
+     * @param eventTime
+     * @return
+     */
+    public String relativeTimeString(long eventTime) {
+        if(running) {
+            long timeNow = System.currentTimeMillis();
+            long delta = timeNow - eventTime;
+            if (delta < 0) delta = -delta;
+            return DateUtils.formatElapsedTime(delta / 1000);
+        } else {
+            if (eventTime < 0) eventTime = -eventTime;
+            return DateUtils.formatElapsedTime(eventTime / 1000);
+        }
+    }
 
     public String toString() {
-        return currentTimeString(true);
+        return relativeTimeString(eventTime());
     }
 
     abstract public String getActionNotificationClickString();

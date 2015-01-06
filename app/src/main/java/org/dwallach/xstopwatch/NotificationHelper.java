@@ -33,28 +33,6 @@ public class NotificationHelper implements Observer {
     private PendingIntent launchPendingIntent;
     private SharedState state;
 
-    private static final int MSG_UPDATE_TIME = 3; // whatever
-
-    /**
-     * Handler to tick once every second when the timer is running
-     * and we need to show the notification.
-     */
-//    private final Handler updateTimeHandler = new Handler() {
-//        private int counter = 0;
-//        @Override
-//        public void handleMessage(Message message) {
-//            counter++;
-//
-//            if(message.what == MSG_UPDATE_TIME) {
-//                if(counter % 60 == 1)
-//                    Log.v(TAG, "Time update (% 60)");
-//                update(state, null);
-//            } else {
-//                Log.e(TAG, "Unknown message: " + message.toString());
-//            }
-//        }
-//    };
-
     public NotificationHelper(Context context, int appIcon, String title, SharedState state) {
         this.context = context;
         this.appIcon = appIcon;
@@ -62,7 +40,6 @@ public class NotificationHelper implements Observer {
         this.state = state;
         this.notificationID = state.getNotificationID();
     }
-
 
     public void kill() {
         Log.v(TAG, "nuking any notifications");
@@ -108,9 +85,6 @@ public class NotificationHelper implements Observer {
 
         initIntents();
 
-        Resources resources = context.getResources();
-//        int accentColor = resources.getColor(R.color.accent);
-
         Bitmap bg = BitmapFactory.decodeResource(context.getResources(), state.getIconID());
 
         Notification.Builder builder = new Notification.Builder(context);
@@ -142,14 +116,6 @@ public class NotificationHelper implements Observer {
         // launch the notification
         NotificationManager notifyManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notifyManager.notify(notificationID, notification);
-
-        // if we're running, then we'll need to update the counter in a second, so we'll do
-        // this delayed message thing
-//        if(isRunning) {
-//            long timeMs = System.currentTimeMillis();
-//            long delayMs = 1000 - (timeMs % 1000);
-//            updateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
-//        }
     }
 
     @Override

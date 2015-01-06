@@ -105,22 +105,6 @@ public class TimerState extends SharedState {
         pingObservers();
     }
 
-    private static String timeString(long deltaTime, boolean subSeconds) {
-        if(deltaTime < 0) deltaTime = 0;
-        int cent = (int)((deltaTime /     10L) % 100L);
-
-        // Hopefully this gives us a nicely internationalized version of the elapsed time.
-        // In US-English, we get MM:SS or H:MM:SS. I don't know about elsewhere. Maybe
-        // in French it will get HhMMmSSs (e.g., 5h23m22s). If not, that's Android's problem,
-        // not our problem.
-        String secondsResult = DateUtils.formatElapsedTime(deltaTime / 1000);
-        if(subSeconds)
-            return String.format("%s.%02d", secondsResult, cent);
-        else
-            return secondsResult;
-
-    }
-
     @Override
     public long eventTime() {
         // IF RUNNING, this time will be consistent with System.currentTimeMillis(), i.e., in GMT.

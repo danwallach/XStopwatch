@@ -92,7 +92,8 @@ public class NotificationHelper implements Observer {
         if(!isRunning) {
             String timeString = state.toString();
             builder.addAction(android.R.drawable.ic_media_play, "", clickPendingIntent)
-                    .setContentTitle(timeString);
+                    .setContentTitle(timeString)
+                    .setContentText(title); // deliberately backwards for these two so the peek card has the important stuff above the fold
         }  else {
             builder.addAction(android.R.drawable.ic_media_pause, "", clickPendingIntent)
                     .setWhen(eventTime)

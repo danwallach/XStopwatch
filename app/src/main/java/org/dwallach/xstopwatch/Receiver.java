@@ -24,6 +24,7 @@ public class Receiver extends BroadcastReceiver {
             Log.v(TAG, "stopwatch remote click");
             StopwatchState.getSingleton().click();
             PreferencesHelper.savePreferences(context);
+            PreferencesHelper.broadcastPreferences(context, Constants.stopwatchQueryIntent);
             return;
         }
 
@@ -31,6 +32,7 @@ public class Receiver extends BroadcastReceiver {
             Log.v(TAG, "timer remote click");
             TimerState.getSingleton().click();
             PreferencesHelper.savePreferences(context);
+            PreferencesHelper.broadcastPreferences(context, Constants.timerQueryIntent);
             return;
         }
 

@@ -9,8 +9,8 @@ package org.dwallach.xstopwatch;
 public class Constants {
     public static final String prefStopwatchRunning = "running";
     public static final String prefStopwatchReset = "reset";
-    public static final String prefStopwatchStartTime = "startTime";
-    public static final String prefStopwatchPriorTime = "priorTime";
+    public static final String prefStopwatchStartTime = "start";
+    public static final String prefStopwatchBaseTime = "base";
     public static final String prefStopwatchUpdateTimestamp = "updateTimestamp";
 
     public static final String sharedPrefsStopwatch = "org.dwallach.x.stopwatch.prefs";
@@ -19,8 +19,8 @@ public class Constants {
 
     public static final String prefTimerRunning = "running";
     public static final String prefTimerReset = "reset";
-    public static final String prefTimerStartTime = "startTime";
-    public static final String prefTimerPauseDelta = "pauseDelta";
+    public static final String prefTimerStartTime = "start";
+    public static final String prefTimerPauseElapsed = "elapsed";
     public static final String prefTimerDuration = "duration";
     public static final String prefTimerUpdateTimestamp = "updateTimestamp";
 

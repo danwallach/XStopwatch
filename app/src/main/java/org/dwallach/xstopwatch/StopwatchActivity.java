@@ -64,6 +64,7 @@ public class StopwatchActivity extends Activity implements Observer {
                     public void onClick(View v) {
                         stopwatchState.reset();
                         PreferencesHelper.savePreferences(StopwatchActivity.this);
+                        PreferencesHelper.broadcastPreferences(StopwatchActivity.this, Constants.stopwatchUpdateIntent);
                     }
                 });
 
@@ -72,6 +73,7 @@ public class StopwatchActivity extends Activity implements Observer {
                     public void onClick(View v) {
                         stopwatchState.click();
                         PreferencesHelper.savePreferences(StopwatchActivity.this);
+                        PreferencesHelper.broadcastPreferences(StopwatchActivity.this, Constants.stopwatchUpdateIntent);
                     }
                 });
             }

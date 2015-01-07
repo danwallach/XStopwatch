@@ -7,23 +7,18 @@
 package org.dwallach.xstopwatch;
 
 import android.os.Handler;
-import android.os.Message;
-import android.os.Vibrator;
-import android.text.format.DateUtils;
 import android.util.Log;
-
-import java.util.Observable;
 
 public class TimerState extends SharedState {
     private final static String TAG = "TimerState";
 
-    private long pauseDelta;  // if the timer's not running, this says how far we got (i.e., we're at startTime + pauseDelta, and 0 <= pauseDelta <= duration)
+    private long elapsedTime;  // if the timer's not running, this says how far we got (i.e., we're at startTime + elapsedTime, and 0 <= elapsedTime <= duration)
     private long startTime;  // when the timer started running
     private long duration;   // when the timer ends (i.e., the timer completes at startTime + duration, assuming it's running)
 
     private TimerState() {
         super();
-        pauseDelta = 0;
+        elapsedTime = 0;
         duration = 0;
         startTime = 0;
     }
@@ -36,8 +31,8 @@ public class TimerState extends SharedState {
         return singleton;
     }
 
-    public long getPauseDelta() {
-        return pauseDelta;
+    public long getElapsedTime() {
+        return elapsedTime;
     }
 
     public long getDuration() {
@@ -57,7 +52,7 @@ public class TimerState extends SharedState {
         Log.v(TAG, "reset");
 
         // don't overwrite duration -- that's a user setting
-        pauseDelta = startTime = 0;
+        elapsedTime = startTime = 0;
 
         super.reset();
         updateBuzzHandler();
@@ -72,7 +67,7 @@ public class TimerState extends SharedState {
             startTime = currentTime();
         else {
             // we're resuming from a pause, so we need to shove up the start time
-            long pauseTime = startTime + pauseDelta;
+            long pauseTime = startTime + elapsedTime;
             startTime += currentTime() - pauseTime;
         }
 
@@ -84,17 +79,17 @@ public class TimerState extends SharedState {
         Log.v(TAG, "pause");
 
         long pauseTime = currentTime();
-        pauseDelta = (pauseTime - startTime);
-        if(pauseDelta > duration) pauseDelta = duration;
+        elapsedTime = (pauseTime - startTime);
+        if(elapsedTime > duration) elapsedTime = duration;
 
         super.pause();
         updateBuzzHandler();
     }
 
-    public void restoreState(long duration, long pauseDelta, long startTime, boolean running, boolean reset, long updateTimestamp) {
+    public void restoreState(long duration, long elapsedTime, long startTime, boolean running, boolean reset, long updateTimestamp) {
         Log.v(TAG, "restoring state");
         this.duration = duration;
-        this.pauseDelta = pauseDelta;
+        this.elapsedTime = elapsedTime;
         this.startTime = startTime;
         this.running = running;
         this.reset = reset;
@@ -111,7 +106,7 @@ public class TimerState extends SharedState {
         // IF PAUSED, this time will be relative to zero and will be what should be displayed.
 
         if(reset) return duration;
-        if(!running) return duration - pauseDelta;
+        if(!running) return duration - elapsedTime;
 
         // running
         return duration + startTime;

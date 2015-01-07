@@ -22,7 +22,7 @@ public class PreferencesHelper {
         StopwatchState stopwatchState = StopwatchState.getSingleton();
 
         editor.putLong(Constants.prefStopwatchStartTime, stopwatchState.getStartTime());
-        editor.putLong(Constants.prefStopwatchPriorTime, stopwatchState.getPriorTime());
+        editor.putLong(Constants.prefStopwatchBaseTime, stopwatchState.getPriorTime());
         editor.putBoolean(Constants.prefStopwatchRunning, stopwatchState.isRunning());
         editor.putBoolean(Constants.prefStopwatchReset, stopwatchState.isReset());
         editor.putLong(Constants.prefStopwatchUpdateTimestamp, stopwatchState.getUpdateTimestamp());
@@ -36,7 +36,7 @@ public class PreferencesHelper {
         TimerState timerState = TimerState.getSingleton();
 
         editor.putLong(Constants.prefTimerStartTime, timerState.getStartTime());
-        editor.putLong(Constants.prefTimerPauseDelta, timerState.getPauseDelta());
+        editor.putLong(Constants.prefTimerPauseElapsed, timerState.getElapsedTime());
         editor.putLong(Constants.prefTimerDuration, timerState.getDuration());
         editor.putBoolean(Constants.prefTimerRunning, timerState.isRunning());
         editor.putBoolean(Constants.prefTimerReset, timerState.isReset());
@@ -44,13 +44,8 @@ public class PreferencesHelper {
 
         if (!editor.commit())
             Log.v(TAG, "savePreferences commit failed ?!");
-
-        broadcastPreferences(context);
     }
 
-    public static void broadcastPreferences(Context context) {
-        broadcastPreferences(context, null);
-    }
     public static void broadcastPreferences(Context context, String action) {
         Log.v(TAG, "broadcastPreferences");
         StopwatchState stopwatchState = StopwatchState.getSingleton();
@@ -63,14 +58,14 @@ public class PreferencesHelper {
         if(!stopwatchState.isInitialized() || !timerState.isInitialized())
             loadPreferences(context);
 
-        if(action == null || action.equals(Constants.stopwatchQueryIntent)) {
+        if(action == null || action.equals(Constants.stopwatchQueryIntent) || action.equals(Constants.stopwatchUpdateIntent)) {
             if (!stopwatchState.isInitialized()) {
                 Log.e(TAG, "stopwatch state not initialized, can't broadcast preferences");
             } else {
                 Log.v(TAG, "broadcasting stopwatch preferences");
                 Intent broadcast = new Intent(Constants.stopwatchUpdateIntent);
                 broadcast.putExtra(Constants.prefStopwatchStartTime, stopwatchState.getStartTime());
-                broadcast.putExtra(Constants.prefStopwatchPriorTime, stopwatchState.getPriorTime());
+                broadcast.putExtra(Constants.prefStopwatchBaseTime, stopwatchState.getPriorTime());
                 broadcast.putExtra(Constants.prefStopwatchRunning, stopwatchState.isRunning());
                 broadcast.putExtra(Constants.prefStopwatchReset, stopwatchState.isReset());
                 broadcast.putExtra(Constants.prefStopwatchUpdateTimestamp, stopwatchState.getUpdateTimestamp());
@@ -78,14 +73,14 @@ public class PreferencesHelper {
             }
         }
 
-        if(action == null || action.equals(Constants.timerQueryIntent)) {
+        if(action == null || action.equals(Constants.timerQueryIntent) || action.equals(Constants.timerUpdateIntent)) {
             if (!timerState.isInitialized()) {
                 Log.e(TAG, "timer state not initialized, can't broadcast preferences");
             } else {
                 Log.v(TAG, "broadcasting timer preferences");
                 Intent broadcast = new Intent(Constants.timerUpdateIntent);
                 broadcast.putExtra(Constants.prefTimerStartTime, timerState.getStartTime());
-                broadcast.putExtra(Constants.prefTimerPauseDelta, timerState.getPauseDelta());
+                broadcast.putExtra(Constants.prefTimerPauseElapsed, timerState.getElapsedTime());
                 broadcast.putExtra(Constants.prefTimerDuration, timerState.getDuration());
                 broadcast.putExtra(Constants.prefTimerRunning, timerState.isRunning());
                 broadcast.putExtra(Constants.prefTimerReset, timerState.isReset());
@@ -103,7 +98,7 @@ public class PreferencesHelper {
         {
             SharedPreferences prefs = context.getSharedPreferences(Constants.sharedPrefsStopwatch, Context.MODE_PRIVATE);
 
-            long priorTime = prefs.getLong(Constants.prefStopwatchPriorTime, 0L);
+            long priorTime = prefs.getLong(Constants.prefStopwatchBaseTime, 0L);
             long startTime = prefs.getLong(Constants.prefStopwatchStartTime, 0L);
             boolean isRunning = prefs.getBoolean(Constants.prefStopwatchRunning, false);
             boolean isReset = prefs.getBoolean(Constants.prefStopwatchReset, true);
@@ -119,7 +114,7 @@ public class PreferencesHelper {
             SharedPreferences prefs = context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE);
 
             long startTime = prefs.getLong(Constants.prefTimerStartTime, 0L);
-            long pauseDelta = prefs.getLong(Constants.prefTimerPauseDelta, 0L);
+            long pauseDelta = prefs.getLong(Constants.prefTimerPauseElapsed, 0L);
             long duration = prefs.getLong(Constants.prefTimerDuration, 0L);
             boolean isRunning = prefs.getBoolean(Constants.prefTimerRunning, false);
             boolean isReset = prefs.getBoolean(Constants.prefTimerReset, true);

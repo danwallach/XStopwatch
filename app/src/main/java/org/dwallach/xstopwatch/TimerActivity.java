@@ -103,6 +103,7 @@ public class TimerActivity extends Activity implements Observer {
                     public void onClick(View v) {
                         timerState.reset();
                         PreferencesHelper.savePreferences(TimerActivity.this);
+                        PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
                     }
                 });
 
@@ -111,6 +112,7 @@ public class TimerActivity extends Activity implements Observer {
                     public void onClick(View v) {
                         timerState.click();
                         PreferencesHelper.savePreferences(TimerActivity.this);
+                        PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
                     }
                 });
             }
@@ -199,6 +201,7 @@ public class TimerActivity extends Activity implements Observer {
                 Log.v(TAG, "buzzing!");
                 TimerState.getSingleton().reset();
                 PreferencesHelper.savePreferences(TimerActivity.this);
+                PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
 
                 Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 vibrator.vibrate(vibratorPattern, -1, new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build());

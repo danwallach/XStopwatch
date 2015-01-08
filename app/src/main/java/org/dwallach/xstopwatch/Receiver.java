@@ -20,6 +20,14 @@ public class Receiver extends BroadcastReceiver {
 
         String action = intent.getAction();
 
+        if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
+            // If the service isn't running, set it up so we'll be around to receive other messages.
+            // (We're registering for a boot notification. If that works on Wear, this is where we'll
+            // find out about it.)
+            NotificationService.kickStart(context);
+            return;
+        }
+
         if(action.equals(StopwatchState.ACTION_NOTIFICATION_CLICK_STRING)) {
             Log.v(TAG, "stopwatch remote click");
             StopwatchState.getSingleton().click(context);

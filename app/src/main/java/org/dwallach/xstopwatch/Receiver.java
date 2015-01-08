@@ -22,7 +22,7 @@ public class Receiver extends BroadcastReceiver {
 
         if(action.equals(StopwatchState.ACTION_NOTIFICATION_CLICK_STRING)) {
             Log.v(TAG, "stopwatch remote click");
-            StopwatchState.getSingleton().click();
+            StopwatchState.getSingleton().click(context);
             PreferencesHelper.savePreferences(context);
             PreferencesHelper.broadcastPreferences(context, Constants.stopwatchQueryIntent);
             return;
@@ -30,7 +30,7 @@ public class Receiver extends BroadcastReceiver {
 
         if(action.equals(TimerState.ACTION_NOTIFICATION_CLICK_STRING)) {
             Log.v(TAG, "timer remote click");
-            TimerState.getSingleton().click();
+            TimerState.getSingleton().click(context);
             PreferencesHelper.savePreferences(context);
             PreferencesHelper.broadcastPreferences(context, Constants.timerQueryIntent);
             return;

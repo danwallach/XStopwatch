@@ -7,6 +7,7 @@
 package org.dwallach.xstopwatch;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -65,7 +66,7 @@ abstract class SharedState extends Observable {
         return reset;
     }
 
-    public void reset() {
+    public void reset(Context context) {
         Log.v(TAG, getShortName() + "reset");
         running = false;
         reset = true;
@@ -75,7 +76,7 @@ abstract class SharedState extends Observable {
         pingObservers();
     }
 
-    public void run() {
+    public void run(Context context) {
         Log.v(TAG, getShortName() + "run");
 
         reset = false;
@@ -86,7 +87,7 @@ abstract class SharedState extends Observable {
         pingObservers();
     }
 
-    public void pause() {
+    public void pause(Context context) {
         Log.v(TAG, getShortName() + "pause");
 
         running = false;
@@ -96,12 +97,12 @@ abstract class SharedState extends Observable {
         pingObservers();
     }
 
-    public void click() {
+    public void click(Context context) {
         Log.v(TAG, getShortName() + "click");
         if (isRunning())
-            pause();
+            pause(context);
         else
-            run();
+            run(context);
     }
 
     public void pingObservers() {

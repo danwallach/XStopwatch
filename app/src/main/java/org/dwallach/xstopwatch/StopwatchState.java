@@ -6,6 +6,7 @@
  */
 package org.dwallach.xstopwatch;
 
+import android.content.Context;
 import android.text.format.DateUtils;
 import android.util.Log;
 
@@ -37,28 +38,28 @@ public class StopwatchState extends SharedState {
         return startTime;
     }
 
-    public void reset() {
+    public void reset(Context context) {
         Log.v(TAG, "reset");
         priorTime = startTime = 0;
 
-        super.reset();
+        super.reset(context);
     }
 
-    public void run() {
+    public void run(Context context) {
         Log.v(TAG, "run");
 
         startTime = currentTime();
 
-        super.run();
+        super.run(context);
     }
 
-    public void pause() {
+    public void pause(Context context) {
         Log.v(TAG, "pause");
 
         long pauseTime = currentTime();
         priorTime += (pauseTime - startTime);
 
-        super.pause();
+        super.pause(context);
     }
 
     public void restoreState(long priorTime, long startTime, boolean running, boolean reset, long updateTimestamp) {

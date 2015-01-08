@@ -27,4 +27,7 @@ public class Constants {
     public static final String sharedPrefsTimer = "org.dwallach.x.timer.prefs";
     public static final String timerUpdateIntent = "org.dwallach.x.timer.update";
     public static final String timerQueryIntent = "org.dwallach.x.timer.query";
+
+    public static final String actionTimerComplete = "org.dwallach.x.timer.ACTION_TIMER_COMPLETE";
+
 }

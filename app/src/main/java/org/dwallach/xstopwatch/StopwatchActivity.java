@@ -62,7 +62,7 @@ public class StopwatchActivity extends Activity implements Observer {
                 resetButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        stopwatchState.reset();
+                        stopwatchState.reset(StopwatchActivity.this);
                         PreferencesHelper.savePreferences(StopwatchActivity.this);
                         PreferencesHelper.broadcastPreferences(StopwatchActivity.this, Constants.stopwatchUpdateIntent);
                     }
@@ -71,7 +71,7 @@ public class StopwatchActivity extends Activity implements Observer {
                 playButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        stopwatchState.click();
+                        stopwatchState.click(StopwatchActivity.this);
                         PreferencesHelper.savePreferences(StopwatchActivity.this);
                         PreferencesHelper.broadcastPreferences(StopwatchActivity.this, Constants.stopwatchUpdateIntent);
                     }

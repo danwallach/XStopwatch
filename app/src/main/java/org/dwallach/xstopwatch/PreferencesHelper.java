@@ -122,7 +122,7 @@ public class PreferencesHelper {
 
             Log.v(TAG, "Timer:: startTime(" + startTime + "), pauseDelta(" + pauseDelta + "), duration(" + duration + "), isRunning(" + isRunning + "), isReset(" + isReset + "), updateTimestamp(" + updateTimestamp + ")");
 
-            timerState.restoreState(duration, pauseDelta, startTime, isRunning, isReset, updateTimestamp);
+            timerState.restoreState(context, duration, pauseDelta, startTime, isRunning, isReset, updateTimestamp);
         }
     }
 }

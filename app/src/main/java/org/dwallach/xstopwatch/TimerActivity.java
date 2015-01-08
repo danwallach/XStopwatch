@@ -1,15 +1,19 @@
 package org.dwallach.xstopwatch;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
+import android.provider.AlarmClock;
 import android.support.wearable.view.WatchViewStub;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -32,7 +36,7 @@ public class TimerActivity extends Activity implements Observer {
     private StopwatchText stopwatchText;
 
     // see http://developer.android.com/guide/topics/ui/controls/pickers.html
-    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+    public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
         private TimerState timerState = TimerState.getSingleton();
 
         @Override
@@ -48,7 +52,7 @@ public class TimerActivity extends Activity implements Observer {
 
         public void onTimeSet(TimePicker view, int hour, int minute) {
             // Do something with the time chosen by the user
-            timerState.setDuration(hour * 3600000 + minute * 60000);
+            timerState.setDuration(TimerActivity.this, hour * 3600000 + minute * 60000);
         }
     }
 
@@ -61,6 +65,13 @@ public class TimerActivity extends Activity implements Observer {
     // call to this specified in the layout xml files
     public void launchStopwatch(View view) {
         startActivity(new Intent(this, StopwatchActivity.class));
+    }
+
+    public static NotificationHelper getNewNotificationHelper(Context context) {
+        return new NotificationHelper(context,
+                        R.drawable.sandwatch_trans,
+                        context.getResources().getString(R.string.timer_app_name),
+                        TimerState.getSingleton());
     }
 
     @Override
@@ -79,29 +90,33 @@ public class TimerActivity extends Activity implements Observer {
                 setButton = (ImageButton) stub.findViewById(R.id.setButton);
                 stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
                 stopwatchText.setSharedState(timerState);
-                timerState.setBuzzHandler(buzzHandler);
 
-                // bring in saved preferences
-                PreferencesHelper.loadPreferences(TimerActivity.this);
+                int paramLength = getIntent().getIntExtra(AlarmClock.EXTRA_LENGTH, 0);
+                if (paramLength > 0 && paramLength <= 86400) {
+                    Log.v(TAG, "onCreate, somebody told us a time value: " + paramLength);
+                    long durationMillis = paramLength * 1000;
+                    TimerState.getSingleton().setDuration(TimerActivity.this, durationMillis);
+                    PreferencesHelper.savePreferences(TimerActivity.this);
+                    PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
+                } else {
+                    // bring in saved preferences
+                    PreferencesHelper.loadPreferences(TimerActivity.this);
+                }
 
                 // now that we've loaded the state, we know whether we're playing or paused
                 setPlayButtonIcon();
 
                 // set up notification helper, and use this as a proxy for whether
                 // or not we need to set up everybody who pays attention to the timerState
-                if(notificationHelper == null) {
-                    notificationHelper = new NotificationHelper(TimerActivity.this,
-                            R.drawable.sandwatch_trans,
-                            getResources().getString(R.string.timer_app_name),
-                            timerState);
-
+                if (notificationHelper == null) {
+                    notificationHelper = getNewNotificationHelper(TimerActivity.this);
                     setStopwatchObservers(true);
                 }
 
                 resetButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        timerState.reset();
+                        timerState.reset(TimerActivity.this);
                         PreferencesHelper.savePreferences(TimerActivity.this);
                         PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
                     }
@@ -110,7 +125,7 @@ public class TimerActivity extends Activity implements Observer {
                 playButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        timerState.click();
+                        timerState.click(TimerActivity.this);
                         PreferencesHelper.savePreferences(TimerActivity.this);
                         PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
                     }
@@ -181,33 +196,4 @@ public class TimerActivity extends Activity implements Observer {
         else
             playButton.setImageResource(android.R.drawable.ic_media_play);
     }
-
-    public static final int MSG_BUZZ_TIME = 4; // whatever
-
-    /**
-     * Handler to vibrate when the timer hits zero
-     */
-    private final Handler buzzHandler = new Handler() {
-        private int counter = 0;
-
-        // four short buzzes within one second total time
-        private long vibratorPattern[] = { 100, 200, 100, 200, 100, 200, 100 };
-
-        @Override
-        public void handleMessage(Message message) {
-            counter++;
-
-            if(message.what == MSG_BUZZ_TIME) {
-                Log.v(TAG, "buzzing!");
-                TimerState.getSingleton().reset();
-                PreferencesHelper.savePreferences(TimerActivity.this);
-                PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
-
-                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-                vibrator.vibrate(vibratorPattern, -1, new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build());
-            } else {
-                Log.e(TAG, "Unknown message: " + message.toString());
-            }
-        }
-    };
 }

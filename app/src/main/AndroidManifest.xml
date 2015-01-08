@@ -18,7 +18,6 @@
             android:label="@string/stopwatch_app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -30,8 +29,11 @@
             android:label="@string/timer_app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SET_TIMER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
@@ -46,6 +48,8 @@
                 <action android:name="org.dwallach.x.timer.query" />
             </intent-filter>
         </receiver>
+
+        <service android:name=".NotificationService" />
 
     </application>
 

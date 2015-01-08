@@ -59,6 +59,10 @@ public class StopwatchActivity extends Activity implements Observer {
                     setStopwatchObservers(true);
                 }
 
+                // get the notification service running as well; it will stick around to make sure
+                // the broadcast receiver is alive
+                NotificationService.kickStart(StopwatchActivity.this);
+
                 resetButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

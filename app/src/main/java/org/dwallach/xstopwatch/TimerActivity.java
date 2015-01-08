@@ -106,6 +106,10 @@ public class TimerActivity extends Activity implements Observer {
                 // now that we've loaded the state, we know whether we're playing or paused
                 setPlayButtonIcon();
 
+                // get the notification service running as well; it will stick around to make sure
+                // the broadcast receiver is alive
+                NotificationService.kickStart(TimerActivity.this);
+
                 // set up notification helper, and use this as a proxy for whether
                 // or not we need to set up everybody who pays attention to the timerState
                 if (notificationHelper == null) {

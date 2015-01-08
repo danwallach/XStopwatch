@@ -21,14 +21,22 @@ public class Receiver extends BroadcastReceiver {
         String action = intent.getAction();
 
         if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
-            // If the service isn't running, set it up so we'll be around to receive other messages.
-            // (We're registering for a boot notification. If that works on Wear, this is where we'll
-            // find out about it.)
+            // In manifest.xml, we register for a boot notification. If that works on Wear, this is where it
+            // will arrive. The purpose of the notification is to start up our NotificationService. It's
+            // job is to sit around waiting for queries from other apps for the state of the stopwatch
+            // and timer.
             NotificationService.kickStart(context);
             return;
         }
 
         if(action.equals(StopwatchState.ACTION_NOTIFICATION_CLICK_STRING)) {
+            // When we display notifications, after the user swipes away the stopwatch or timer app,
+            // those notifications are running in a completely separate process. They're loaded with
+            // two different actions. One launches an activity back here again. The other one, which
+            // we stick up front in the notification, does the play/pause action. When the user clicks
+            // that button, it comes here. Then, all we do is internally record the click (which will
+            // have other side effects like changing the notification). We save our state and send
+            // out a new broadcast to anybody listening.
             Log.v(TAG, "stopwatch remote click");
             StopwatchState.getSingleton().click(context);
             PreferencesHelper.savePreferences(context);
@@ -37,6 +45,7 @@ public class Receiver extends BroadcastReceiver {
         }
 
         if(action.equals(TimerState.ACTION_NOTIFICATION_CLICK_STRING)) {
+            // See discussion above for StopwatchState. Same deal.
             Log.v(TAG, "timer remote click");
             TimerState.getSingleton().click(context);
             PreferencesHelper.savePreferences(context);
@@ -45,6 +54,10 @@ public class Receiver extends BroadcastReceiver {
         }
 
         if(action.equals(Constants.stopwatchQueryIntent) || action.equals(Constants.timerQueryIntent)) {
+            // When another app wants to learn the state of the stopwatch or timer, it needs to do
+            // two things. First, it needs to be listening for our broadcast intents. Second, if it's
+            // newly running and it wants to get old state, it needs to ask for it. Those requests,
+            // by sending broadcast intents that this app is looking for, arrive here.
             Log.v(TAG, "remote query!");
             PreferencesHelper.broadcastPreferences(context, action);
             return;

@@ -13,7 +13,6 @@ import android.util.Log;
 
 public class NotificationService extends IntentService {
     public static final String TAG = "NotificationService";
-    public NotificationHelper notificationHelper;
 
     public NotificationService() {
         super(TAG);
@@ -34,19 +33,20 @@ public class NotificationService extends IntentService {
         if(!timerState.isInitialized())
             PreferencesHelper.loadPreferences(this);
 
-        if(notificationHelper == null) {
-            notificationHelper = TimerActivity.getNewNotificationHelper(this);
-        }
-
         String action = intent.getAction();
         if (Intent.ACTION_DEFAULT.equals(action)) {
-            // we got launched by the kickstarter
+            // we got launched by the kickstarter (see below)
             Log.v(TAG, "kickstart launch!");
+            return;
+
         } else if (Constants.actionTimerComplete.equals(action)) {
             // The timer completed and we got launched and/or woken back up again.
-            // To make this more complicated, if we start dorking with Activity stuff
-            // when we're on the Service, we'll get MANY THINGS BREAKING. So we need
-            // to be careful.
+            // To make this more complicated, we're going to be on a different thread
+            // from the UI thread. Right now, this came down to a bug in the update()
+            // method in TimerActivity(), which tried to set the icon on the play/pause
+            // button. Solution over there: play games with handlers. If the bug arises
+            // elsewhere, similar effort will be necessary.
+
             TimerState.getSingleton().handleTimerComplete(this);
             return;
         } else if (Constants.timerQueryIntent.equals(action) || Constants.stopwatchQueryIntent.equals(action)) {
@@ -54,9 +54,11 @@ public class NotificationService extends IntentService {
             // the stopwatch or timer status. This shouldn't actually be necessary. If the user starts
             // the stopwatch or timer, then the service will be persistent (or as persistent as Android
             // Wear is willing to be when somebody calls startService()) and will respond to broadcast
-            // intents.
+            // intents that don't particularly target us.
             Log.v(TAG, "broadcast request!");
             PreferencesHelper.broadcastPreferences(this, action);
+            return;
+
         } else {
             throw new IllegalStateException("Undefined constant used: " + action);
         }
@@ -69,8 +71,14 @@ public class NotificationService extends IntentService {
     }
 
 
+    /**
+     * Start the notification service, if it's not already running. This is the service
+     * that waits for alarms, when a timer runs out. By having it running, we'll also
+     * be around for broadcast intents, supporting all the communication goodness in
+     * Receiver
+     * @param ctx
+     */
     public static void kickStart(Context ctx) {
-        // start the calendar service, if it's not already running
         NotificationService service = NotificationService.getSingletonService();
 
         if(service == null) {

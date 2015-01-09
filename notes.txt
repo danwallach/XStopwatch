@@ -1,0 +1,7 @@
+Right now, if the app restarts and the saved state indicates that we have a running stopwatch and/or timer,
+we will only restart the appropriate notification when the user launches the app in question first.
+Meanwhile, the watchface might be indicating that a timer and/or stopwatch are running. The problem
+is that we can't just start up a notification for an activity that hasn't actually begun yet.
+
+Given that the notifications are really a bad UI kludge, especially when we have a timer and a stopwatch
+both running at the same time, we're going to leave this alone for now.

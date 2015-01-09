@@ -39,6 +39,10 @@ public class NotificationHelper implements Observer {
         this.title = title;
         this.state = state;
         this.notificationID = state.getNotificationID();
+
+        // launch any notifications right away, if for example we just restarted and there's a
+        // running stopwatch or timer
+        update(state, null);
     }
 
     public void kill() {

@@ -70,13 +70,6 @@ public class TimerActivity extends Activity implements Observer {
         startActivity(new Intent(this, StopwatchActivity.class));
     }
 
-    public static NotificationHelper getNewNotificationHelper(Context context) {
-        return new NotificationHelper(context,
-                        R.drawable.sandwatch_trans,
-                        context.getResources().getString(R.string.timer_app_name),
-                        TimerState.getSingleton());
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,7 +125,10 @@ public class TimerActivity extends Activity implements Observer {
                 // set up notification helper, and use this as a proxy for whether
                 // or not we need to set up everybody who pays attention to the timerState
                 if (notificationHelper == null) {
-                    notificationHelper = getNewNotificationHelper(TimerActivity.this);
+                    notificationHelper = new NotificationHelper(TimerActivity.this,
+                            R.drawable.sandwatch_trans,
+                            getResources().getString(R.string.timer_app_name),
+                            TimerState.getSingleton());
                     setStopwatchObservers(true);
                 }
 

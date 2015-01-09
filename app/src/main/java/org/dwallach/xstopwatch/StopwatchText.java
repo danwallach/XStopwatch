@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
@@ -29,7 +30,7 @@ import java.util.Observer;
  * When running, the text is updated once a second, with text derived from the SharedState
  * (which might be either StopwatchState or TimerState).
  */
-public class StopwatchText extends SurfaceView implements Observer {
+public class StopwatchText extends View implements Observer {
     private final static String TAG = "StopwatchText";
 
     private boolean visible = true;
@@ -144,8 +145,15 @@ public class StopwatchText extends SurfaceView implements Observer {
             return;
         }
 
-        // clear the screen
-        canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
+        // clear the screen: complicated because uggh.
+        // http://stackoverflow.com/questions/4650755/clearing-canvas-with-canvas-drawcolor
+        Paint paint = new Paint();
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas.drawPaint(paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+
+        // canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
+
         canvas.drawText(result, textX, textY, textPaint);
     }
 

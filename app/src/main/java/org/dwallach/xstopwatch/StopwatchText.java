@@ -162,6 +162,7 @@ public class StopwatchText extends View implements Observer {
     public void update(Observable observable, Object data) {
         // something changed in the StopwatchState...
         Log.v(TAG, shortName + "update: invalidating text");
+        updateTimeHandler.removeMessages(MSG_UPDATE_TIME);
         updateTimeHandler.sendEmptyMessage(MSG_UPDATE_TIME); // now, rather than later
     }
 }

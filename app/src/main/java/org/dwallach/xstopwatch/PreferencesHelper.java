@@ -120,6 +120,14 @@ public class PreferencesHelper {
             boolean isReset = prefs.getBoolean(Constants.prefTimerReset, true);
             long updateTimestamp = prefs.getLong(Constants.prefTimerUpdateTimestamp, 0L);
 
+            // sanity checking: if we're coming back from whatever, and we discover that we *used* to
+            // be running, but we've gotten way past the deadline, then just reset things.
+            long currentTime = System.currentTimeMillis();
+            if(isRunning && startTime + duration < currentTime) {
+                isReset = true;
+                isRunning = false;
+            }
+
             Log.v(TAG, "Timer:: startTime(" + startTime + "), pauseDelta(" + pauseDelta + "), duration(" + duration + "), isRunning(" + isRunning + "), isReset(" + isReset + "), updateTimestamp(" + updateTimestamp + ")");
 
             timerState.restoreState(context, duration, pauseDelta, startTime, isRunning, isReset, updateTimestamp);

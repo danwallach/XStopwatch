@@ -86,10 +86,8 @@ public class StopwatchState extends SharedState {
         }
     }
 
-    public static final String ACTION_NOTIFICATION_CLICK_STRING = "intent.action.notification.stopwatch.click";
-
     public String getActionNotificationClickString() {
-        return ACTION_NOTIFICATION_CLICK_STRING;
+        return Constants.stopwatchStartStopIntent;
     }
 
     public int getNotificationID() {

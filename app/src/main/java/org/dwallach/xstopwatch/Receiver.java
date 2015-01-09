@@ -29,7 +29,7 @@ public class Receiver extends BroadcastReceiver {
             return;
         }
 
-        if(action.equals(StopwatchState.ACTION_NOTIFICATION_CLICK_STRING)) {
+        if(action.equals(Constants.stopwatchStartStopIntent)) {
             // When we display notifications, after the user swipes away the stopwatch or timer app,
             // those notifications are running in a completely separate process. They're loaded with
             // two different actions. One launches an activity back here again. The other one, which
@@ -51,7 +51,7 @@ public class Receiver extends BroadcastReceiver {
             return;
         }
 
-        if(action.equals(TimerState.ACTION_NOTIFICATION_CLICK_STRING)) {
+        if(action.equals(Constants.timerStartStopIntent)) {
             // See discussion above for StopwatchState. Same deal.
             Log.v(TAG, "timer remote click");
             TimerState.getSingleton().click(context);

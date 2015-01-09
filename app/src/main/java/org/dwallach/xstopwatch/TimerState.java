@@ -119,10 +119,8 @@ public class TimerState extends SharedState {
 
     }
 
-    public static final String ACTION_NOTIFICATION_CLICK_STRING = "intent.action.notification.timer.click";
-
     public String getActionNotificationClickString() {
-        return ACTION_NOTIFICATION_CLICK_STRING;
+        return Constants.timerStartStopIntent;
     }
 
     public int getNotificationID() {

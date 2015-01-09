@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Vibrator;
 import android.provider.AlarmClock;
@@ -35,8 +36,10 @@ public class TimerActivity extends Activity implements Observer {
     private NotificationHelper notificationHelper;
     private StopwatchText stopwatchText;
 
+    private Handler buttonStateHandler;
+
     // see http://developer.android.com/guide/topics/ui/controls/pickers.html
-    public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
         private TimerState timerState = TimerState.getSingleton();
 
         @Override
@@ -52,7 +55,7 @@ public class TimerActivity extends Activity implements Observer {
 
         public void onTimeSet(TimePicker view, int hour, int minute) {
             // Do something with the time chosen by the user
-            timerState.setDuration(TimerActivity.this, hour * 3600000 + minute * 60000);
+            timerState.setDuration(null, hour * 3600000 + minute * 60000);
         }
     }
 
@@ -79,7 +82,22 @@ public class TimerActivity extends Activity implements Observer {
         super.onCreate(savedInstanceState);
 
         Log.v(TAG, "onCreate");
+
         setContentView(R.layout.activity_timer);
+
+        // This buttonState business is all about dealing with alarms, which go to
+        // NotificationService, on a different thread, which needs to ping us to
+        // update the UI, if we exist. This handler will always run on the UI thread.
+        // It's invoked from the update() method down below, which may run on other threads.
+        buttonStateHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                Log.v(TAG, "button state message received");
+                if (playButton != null)
+                    setPlayButtonIcon();
+            }
+        };
+
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
             @Override
@@ -90,6 +108,7 @@ public class TimerActivity extends Activity implements Observer {
                 setButton = (ImageButton) stub.findViewById(R.id.setButton);
                 stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
                 stopwatchText.setSharedState(timerState);
+
 
                 int paramLength = getIntent().getIntExtra(AlarmClock.EXTRA_LENGTH, 0);
                 if (paramLength > 0 && paramLength <= 86400) {
@@ -190,11 +209,15 @@ public class TimerActivity extends Activity implements Observer {
     @Override
     public void update(Observable observable, Object data) {
         Log.v(TAG, "activity update");
-        if(playButton != null)
-            setPlayButtonIcon();
+
+        // We might be called on the UI thread or on a service thread; we need to dispatch this
+        // entirely on the UI thread, since we're ultimately going to be monkeying with the UI.
+        // Thus this nonsense.
+        buttonStateHandler.sendEmptyMessage(0);
     }
 
     private void setPlayButtonIcon() {
+        Log.v(TAG, "setPlayButtonIcon");
         if (timerState.isRunning() && playButton != null)
             playButton.setImageResource(android.R.drawable.ic_media_pause);
         else

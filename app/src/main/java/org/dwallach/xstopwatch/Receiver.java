@@ -44,6 +44,13 @@ public class Receiver extends BroadcastReceiver {
             return;
         }
 
+        if (action.equals(Constants.actionTimerComplete)) {
+            // this isn't supposed to happen here: the timer is supposed to launch the service instead
+            Log.v(TAG, "timer complete!");
+            TimerState.getSingleton().handleTimerComplete(context);
+            return;
+        }
+
         if(action.equals(TimerState.ACTION_NOTIFICATION_CLICK_STRING)) {
             // See discussion above for StopwatchState. Same deal.
             Log.v(TAG, "timer remote click");

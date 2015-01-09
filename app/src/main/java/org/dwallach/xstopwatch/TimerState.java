@@ -133,16 +133,13 @@ public class TimerState extends SharedState {
         return TimerActivity.class;
     }
 
-    public void setBuzzTimer(Context context) {
-    }
-
     private void updateBuzzTimer(Context context) {
         if (isRunning()) {
             long timeNow = currentTime();
-            long delayTime = duration - timeNow + startTime;
-            if (delayTime > 0) {
-                Log.v(TAG, "setting alarm: " + delayTime + " ms in the future");
-                registerTimerCompleteAlarm(context, delayTime);
+            long alarmTime = duration + startTime;
+            if (alarmTime > timeNow) {
+                Log.v(TAG, "setting alarm: " + (alarmTime - timeNow) + " ms in the future");
+                registerTimerCompleteAlarm(context, alarmTime);
             } else {
                 Log.v(TAG, "alarm in the past, not setting");
             }
@@ -153,9 +150,21 @@ public class TimerState extends SharedState {
     }
 
     private void registerTimerCompleteAlarm(Context context, long wakeupTime) {
+        Log.v(TAG, "registerTimerCompleteAlarm: wakeUp(" + wakeupTime + ")");
+
+        if(context == null) {
+            Log.e(TAG, "no context, can't set alarm");
+            return;
+        }
+
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         // Create intent that gets fired when the timer expires.
+
+//        Intent alarmIntent = new Intent(context, Receiver.class);
+//        alarmIntent.setAction(Constants.actionTimerComplete);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
         Intent intent = new Intent(Constants.actionTimerComplete, null, context, NotificationService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -164,6 +173,12 @@ public class TimerState extends SharedState {
     }
 
     private void clearTimerCompleteAlarm(Context context) {
+        Log.v(TAG, "clearTimerCompleteAlarm");
+        if(context == null) {
+            Log.e(TAG, "no context, can't clear alarm");
+            return;
+        }
+
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(Constants.actionTimerComplete, null, context, NotificationService.class);

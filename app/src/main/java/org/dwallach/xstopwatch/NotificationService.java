@@ -43,9 +43,12 @@ public class NotificationService extends IntentService {
             // we got launched by the kickstarter
             Log.v(TAG, "kickstart launch!");
         } else if (Constants.actionTimerComplete.equals(action)) {
-            // this came from the alarm when the timer hits zero
-            Log.v(TAG, "timer complete!");
-            notificationHelper.kill();
+            // The timer completed and we got launched and/or woken back up again.
+            // To make this more complicated, if we start dorking with Activity stuff
+            // when we're on the Service, we'll get MANY THINGS BREAKING. So we need
+            // to be careful.
+            TimerState.getSingleton().handleTimerComplete(this);
+            return;
         } else if (Constants.timerQueryIntent.equals(action) || Constants.stopwatchQueryIntent.equals(action)) {
             // We're making this an externally facing service, in case somebody wants to launch us to announce
             // the stopwatch or timer status. This shouldn't actually be necessary. If the user starts

@@ -103,7 +103,11 @@ public class TimerActivity extends Activity implements Observer {
                 stopwatchText.setSharedState(timerState);
 
 
+                String action = getIntent().getAction();
+
                 int paramLength = getIntent().getIntExtra(AlarmClock.EXTRA_LENGTH, 0);
+                Log.v(TAG, "intent action: " + action);
+
                 if (paramLength > 0 && paramLength <= 86400) {
                     Log.v(TAG, "onCreate, somebody told us a time value: " + paramLength);
                     long durationMillis = paramLength * 1000;

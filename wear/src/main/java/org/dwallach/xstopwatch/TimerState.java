@@ -20,7 +20,7 @@ public class TimerState extends SharedState {
 
     private long elapsedTime;  // if the timer's not running, this says how far we got (i.e., we're at startTime + elapsedTime, and 0 <= elapsedTime <= duration)
     private long startTime;  // when the timer started running
-    private long duration;   // when the timer ends (i.e., the timer completes at startTime + duration, assuming it's running)
+    private long duration = 60000;   // when the timer ends (i.e., the timer completes at startTime + duration, assuming it's running). Default: one minute (60,000 sec)
 
     private TimerState() {
         super();

@@ -17,7 +17,9 @@ notes.txt -- ongoing work, notes, to-do items, etc.
      need to rerun this csh script. Also note that you'll need the
      imagemagick package installed to run it.)
 
-/app -- code that runs on the watch
+/mobile -- stub for the phone app (no actual code here)
+
+/wear -- code that runs on the watch
     src/main/java/org/dwallach/xstopwatch/ -- XStopwatch Java files
 
 If you're looking to make some other stopwatch or count-down timer

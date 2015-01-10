@@ -5,3 +5,9 @@ is that we can't just start up a notification for an activity that hasn't actual
 
 Given that the notifications are really a bad UI kludge, especially when we have a timer and a stopwatch
 both running at the same time, we're going to leave this alone for now.
+
+=======================
+
+TODO external SET_TIMER intents are arriving but we're not finding a time inside them. Why?
+
+TODO push-button pause and play work great on the emulator, don't work at all on Moto 360. Why?

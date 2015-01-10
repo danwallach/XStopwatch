@@ -8,6 +8,8 @@ package org.dwallach.xstopwatch;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
 import android.util.Log;
@@ -31,6 +33,18 @@ public class StopwatchActivity extends Activity implements Observer {
         super.onCreate(savedInstanceState);
 
         Log.v(TAG, "onCreate");
+
+        try {
+            PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            int versionNumber = pinfo.versionCode;
+            String versionName = pinfo.versionName;
+
+            Log.i(TAG, "Version: " + versionName + " (" + versionNumber + ")");
+
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "couldn't read version", e);
+        }
+
         setContentView(R.layout.activity_stopwatch);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {

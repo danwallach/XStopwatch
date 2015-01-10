@@ -8,6 +8,8 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,6 +78,36 @@ public class TimerActivity extends Activity implements Observer {
 
         Log.v(TAG, "onCreate");
 
+        try {
+            PackageInfo pinfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            int versionNumber = pinfo.versionCode;
+            String versionName = pinfo.versionName;
+
+            Log.i(TAG, "Version: " + versionName + " (" + versionNumber + ")");
+
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "couldn't read version", e);
+        }
+
+        // there's a chance we were launched through a specific intent to set a timer for
+        // a particular length; this is how we figure it out
+        String action = getIntent().getAction();
+
+        int paramLength = getIntent().getIntExtra(AlarmClock.EXTRA_LENGTH, 0);
+        Log.v(TAG, "intent action: " + action + ", length(" + paramLength + ")");
+
+        if (paramLength > 0 && paramLength <= 86400) {
+            Log.v(TAG, "onCreate, somebody told us a time value: " + paramLength);
+            long durationMillis = paramLength * 1000;
+            TimerState.getSingleton().setDuration(TimerActivity.this, durationMillis);
+            PreferencesHelper.savePreferences(TimerActivity.this);
+            PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
+        } else {
+            // bring in saved preferences
+            PreferencesHelper.loadPreferences(TimerActivity.this);
+        }
+
+
         setContentView(R.layout.activity_timer);
 
         // This buttonState business is all about dealing with alarms, which go to
@@ -102,22 +134,6 @@ public class TimerActivity extends Activity implements Observer {
                 stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
                 stopwatchText.setSharedState(timerState);
 
-
-                String action = getIntent().getAction();
-
-                int paramLength = getIntent().getIntExtra(AlarmClock.EXTRA_LENGTH, 0);
-                Log.v(TAG, "intent action: " + action);
-
-                if (paramLength > 0 && paramLength <= 86400) {
-                    Log.v(TAG, "onCreate, somebody told us a time value: " + paramLength);
-                    long durationMillis = paramLength * 1000;
-                    TimerState.getSingleton().setDuration(TimerActivity.this, durationMillis);
-                    PreferencesHelper.savePreferences(TimerActivity.this);
-                    PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
-                } else {
-                    // bring in saved preferences
-                    PreferencesHelper.loadPreferences(TimerActivity.this);
-                }
 
                 // now that we've loaded the state, we know whether we're playing or paused
                 setPlayButtonIcon();

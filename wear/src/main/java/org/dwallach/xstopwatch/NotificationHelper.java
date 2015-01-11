@@ -113,7 +113,7 @@ public class NotificationHelper implements Observer {
                 .extend(new Notification.WearableExtender()
                         .setHintHideIcon(true)
                         .setContentAction(0)
-                        .setCustomSizePreset(Notification.WearableExtender.SIZE_LARGE)
+//                        .setCustomSizePreset(Notification.WearableExtender.SIZE_LARGE)
                         .setBackground(bg))
                 .build();
 

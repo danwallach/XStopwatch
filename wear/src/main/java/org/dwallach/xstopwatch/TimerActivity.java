@@ -27,6 +27,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 public class TimerActivity extends Activity implements Observer {
     private static final String TAG = "TimerActivity";
@@ -91,15 +92,33 @@ public class TimerActivity extends Activity implements Observer {
 
         // there's a chance we were launched through a specific intent to set a timer for
         // a particular length; this is how we figure it out
-        String action = getIntent().getAction();
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        int paramLength = intent.getIntExtra(AlarmClock.EXTRA_LENGTH, 0);
+        boolean skipUI = intent.getBooleanExtra(AlarmClock.EXTRA_SKIP_UI, false);
 
-        int paramLength = getIntent().getIntExtra(AlarmClock.EXTRA_LENGTH, 0);
         Log.v(TAG, "intent action: " + action + ", length(" + paramLength + ")");
+
+        Bundle allExtras = getIntent().getExtras();
+        if(allExtras != null) {
+            Set<String> keySet = allExtras.keySet();
+
+            // because we're trying to figure out what's actually in here
+            for (String key : keySet) {
+                Log.v(TAG, "--- found extra: " + key + " -> " + allExtras.get(key).toString());
+            }
+        } else {
+            Log.v(TAG, "--- no extras found!");
+        }
 
         if (paramLength > 0 && paramLength <= 86400) {
             Log.v(TAG, "onCreate, somebody told us a time value: " + paramLength);
             long durationMillis = paramLength * 1000;
-            TimerState.getSingleton().setDuration(TimerActivity.this, durationMillis);
+            timerState.setDuration(TimerActivity.this, durationMillis);
+            timerState.reset(TimerActivity.this);
+            if(skipUI)
+                timerState.click(TimerActivity.this);
+
             PreferencesHelper.savePreferences(TimerActivity.this);
             PreferencesHelper.broadcastPreferences(TimerActivity.this, Constants.timerUpdateIntent);
         } else {

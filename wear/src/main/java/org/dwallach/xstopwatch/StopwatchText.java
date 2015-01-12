@@ -147,12 +147,13 @@ public class StopwatchText extends View implements Observer {
 
         // clear the screen: complicated because uggh.
         // http://stackoverflow.com/questions/4650755/clearing-canvas-with-canvas-drawcolor
-        Paint paint = new Paint();
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        canvas.drawPaint(paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+//        Paint paint = new Paint();
+//        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+//        canvas.drawPaint(paint);
+//        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
 
-        // canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR);
+        // let's see if this works again, because it might do better with the ripple effects than the above
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 
         canvas.drawText(result, textX, textY, textPaint);
     }

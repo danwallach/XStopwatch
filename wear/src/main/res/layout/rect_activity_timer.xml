@@ -4,7 +4,8 @@
     android:layout_height="match_parent" android:orientation="vertical"
     tools:context=".TimerActivity" tools:deviceIds="wear_square"
     android:gravity="center_vertical"
-    style="@style/Theme.Wearable">
+    android:background="?android:attr/selectableItemBackgroundBorderless"
+    style="@style/AppTheme">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -13,6 +14,7 @@
         android:measureWithLargestChild="false"
         android:gravity="center"
         android:layout_gravity="center"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:baselineAligned="true">
 
         <ImageButton
@@ -25,7 +27,7 @@
             android:layout_weight="2"
             android:adjustViewBounds="false"
             android:cropToPadding="false"
-            android:background="#00000000"
+            android:background="@drawable/ripple"
             android:layout_marginLeft="20dp" />
 
         <ImageButton
@@ -35,7 +37,7 @@
             android:src="@drawable/sandwatch_selected"
             android:layout_gravity="right"
             android:layout_weight="2"
-            android:background="#00000000"
+            android:background="@drawable/ripple"
             android:adjustViewBounds="false"
             android:layout_marginRight="20dp" />
     </LinearLayout>
@@ -54,6 +56,7 @@
         android:typeface="monospace"
         android:textSize="32dp"
         android:layout_columnSpan="2"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:layout_gravity="center" />
 
     <LinearLayout
@@ -64,6 +67,7 @@
         android:gravity="center"
         android:layout_margin="5dp"
         android:layout_gravity="center"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:baselineAligned="true">
 
         <ImageButton
@@ -75,6 +79,7 @@
             android:src="@android:drawable/ic_menu_close_clear_cancel"
             android:layout_margin="5dp"
             android:layout_gravity="left|top"
+            android:background="@drawable/ripple"
             android:layout_weight="2" />
 
         <ImageButton
@@ -87,6 +92,7 @@
             android:src="@android:drawable/ic_menu_edit"
             android:layout_margin="5dp"
             android:layout_gravity="center_horizontal|top"
+            android:background="@drawable/ripple"
             android:layout_weight="2" />
 
         <ImageButton
@@ -98,6 +104,7 @@
             android:src="@android:drawable/ic_media_play"
             android:layout_margin="5dp"
             android:layout_gravity="right|top"
+            android:background="@drawable/ripple"
             android:layout_weight="2" />
     </LinearLayout>
 

@@ -19,6 +19,8 @@ import android.widget.ImageButton;
 import java.util.Observable;
 import java.util.Observer;
 
+import fr.nicolaspomepuy.androidwearcrashreport.wear.CrashReporter;
+
 public class StopwatchActivity extends Activity implements Observer {
     private static final String TAG = "StopwatchActivity";
 

@@ -40,29 +40,29 @@ def getVersionName = { ->
     return versionName
 }
 
-
-
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "org.dwallach.xstopwatch"
-        minSdkVersion 21
-        targetSdkVersion 21
+        minSdkVersion 21      // Android 5.0, Lollipop, for the watches that haven't been updated to 5.1 yet
+        targetSdkVersion 22   // Android 5.1, Lollipop, which is the current Android Wear system version
         versionCode getVersionCode()
         versionName getVersionName()
     }
+
     buildTypes {
         release {
-            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
         }
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.google.android.support:wearable:1.1.0'
-    compile 'com.google.android.gms:play-services-wearable:6.5.87'
+    compile 'com.google.android.support:wearable:1.2.+'
+    compile 'com.google.android.gms:play-services-wearable:7.5.0'
 }

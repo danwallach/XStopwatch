@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TimePicker;
 
+import java.lang.ref.WeakReference;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -32,6 +33,26 @@ public class TimerActivity extends Activity implements Observer {
     private StopwatchText stopwatchText;
 
     private Handler buttonStateHandler;
+
+    public static class MyHandler extends Handler {
+        private WeakReference<TimerActivity> timerActivityRef;
+
+        public MyHandler(Looper looper, TimerActivity timerActivity) {
+            super(looper);
+            timerActivityRef = new WeakReference<>(timerActivity);
+        }
+
+        @Override
+        public void handleMessage(Message inputMessage) {
+            Log.v(TAG, "button state message received");
+            TimerActivity timerActivity = timerActivityRef.get();
+            if(timerActivity == null) return; // oops, it's gone
+
+            if (timerActivity.playButton != null)
+                timerActivity.setPlayButtonIcon();
+        }
+    }
+
 
     // see http://developer.android.com/guide/topics/ui/controls/pickers.html
     public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
@@ -130,14 +151,7 @@ public class TimerActivity extends Activity implements Observer {
         // NotificationService, on a different thread, which needs to ping us to
         // update the UI, if we exist. This handler will always run on the UI thread.
         // It's invoked from the update() method down below, which may run on other threads.
-        buttonStateHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message inputMessage) {
-                Log.v(TAG, "button state message received");
-                if (playButton != null)
-                    setPlayButtonIcon();
-            }
-        };
+        buttonStateHandler = new MyHandler(Looper.getMainLooper(), this);
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {

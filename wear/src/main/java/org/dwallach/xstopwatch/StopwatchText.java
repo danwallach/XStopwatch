@@ -18,6 +18,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import java.lang.ref.WeakReference;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -36,6 +37,9 @@ public class StopwatchText extends View implements Observer {
     private String shortName;
     Paint textPaint;
 
+    /** Handler to update the time once a second in interactive mode. */
+    private MyHandler updateTimeHandler;
+
     public StopwatchText(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -47,6 +51,8 @@ public class StopwatchText extends View implements Observer {
         textPaint.setColor(Color.WHITE);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(Typeface.MONOSPACE);
+
+        updateTimeHandler = new MyHandler(this);
     }
 
     public StopwatchText(Context context) {
@@ -55,25 +61,32 @@ public class StopwatchText extends View implements Observer {
 
     static final int MSG_UPDATE_TIME = 0;
 
-    /** Handler to update the time once a second in interactive mode. */
-    private final Handler updateTimeHandler = new Handler() {
+    public static class MyHandler extends Handler {
+        private WeakReference<StopwatchText> stopwatchTextRef;
+
+        MyHandler(StopwatchText stopwatchText) {
+            this.stopwatchTextRef = new WeakReference<>(stopwatchText);
+        }
+
         @Override
         public void handleMessage(Message message) {
+            StopwatchText stopwatchText = stopwatchTextRef.get();
+            if(stopwatchText == null) return; // oops, it died
+
             switch (message.what) {
                 case MSG_UPDATE_TIME:
-                    invalidate();
-                    if (visible && state.isRunning()) {
+                    stopwatchText.invalidate();
+                    if (stopwatchText.visible && stopwatchText.state.isRunning()) {
                         long timeMs = System.currentTimeMillis();
                         long delayMs = 1000 - (timeMs % 1000);
-                        updateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
+                        sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
                     } else {
-                        Log.v(TAG, shortName + "time handler complete");
+                        Log.v(TAG, stopwatchText.shortName + "time handler complete");
                     }
                     break;
             }
         }
-    };
-
+    }
 
     public void setSharedState(SharedState sharedState) {
         this.state = sharedState;

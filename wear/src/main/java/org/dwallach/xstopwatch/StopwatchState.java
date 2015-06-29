@@ -7,7 +7,6 @@
 package org.dwallach.xstopwatch;
 
 import android.content.Context;
-import android.text.format.DateUtils;
 import android.util.Log;
 
 public class StopwatchState extends SharedState {

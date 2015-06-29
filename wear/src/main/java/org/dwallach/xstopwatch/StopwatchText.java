@@ -11,13 +11,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.SurfaceView;
 import android.view.View;
 
 import java.util.Observable;

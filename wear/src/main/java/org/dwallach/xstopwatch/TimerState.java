@@ -11,7 +11,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioAttributes;
-import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 
@@ -197,7 +196,7 @@ public class TimerState extends SharedState {
         PreferencesHelper.savePreferences(context);
         PreferencesHelper.broadcastPreferences(context, Constants.timerUpdateIntent);
 
-        Vibrator vibrator = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
+        Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(vibratorPattern, -1, new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build());
     }
 

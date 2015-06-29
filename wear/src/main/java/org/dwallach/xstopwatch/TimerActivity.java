@@ -1,30 +1,23 @@
 package org.dwallach.xstopwatch;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Vibrator;
 import android.provider.AlarmClock;
 import android.support.wearable.view.WatchViewStub;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TimePicker;
 
-import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -35,7 +28,6 @@ public class TimerActivity extends Activity implements Observer {
     private TimerState timerState = TimerState.getSingleton();
     private ImageButton resetButton;
     private ImageButton playButton;
-    private ImageButton setButton;
     private NotificationHelper notificationHelper;
     private StopwatchText stopwatchText;
 
@@ -105,7 +97,12 @@ public class TimerActivity extends Activity implements Observer {
 
             // because we're trying to figure out what's actually in here
             for (String key : keySet) {
-                Log.v(TAG, "--- found extra: " + key + " -> " + allExtras.get(key).toString());
+                try {
+                    Log.v(TAG, "--- found extra: " + key + " -> " + allExtras.get(key).toString());
+                } catch (NullPointerException npe) {
+                    // rare chance of failure with get(key) above returning null; ignore
+                    // and move on
+                }
             }
         } else {
             Log.v(TAG, "--- no extras found!");
@@ -149,7 +146,7 @@ public class TimerActivity extends Activity implements Observer {
                 Log.v(TAG, "onLayoutInflated");
                 resetButton = (ImageButton) stub.findViewById(R.id.resetButton);
                 playButton = (ImageButton) stub.findViewById(R.id.playButton);
-                setButton = (ImageButton) stub.findViewById(R.id.setButton);
+//                setButton = (ImageButton) stub.findViewById(R.id.setButton);
                 stopwatchText = (StopwatchText) stub.findViewById(R.id.elapsedTime);
                 stopwatchText.setSharedState(timerState);
 
@@ -253,9 +250,11 @@ public class TimerActivity extends Activity implements Observer {
 
     private void setPlayButtonIcon() {
         Log.v(TAG, "setPlayButtonIcon");
-        if (timerState.isRunning() && playButton != null)
-            playButton.setImageResource(android.R.drawable.ic_media_pause);
-        else
-            playButton.setImageResource(android.R.drawable.ic_media_play);
+        if(playButton != null) {
+            if (timerState.isRunning())
+                playButton.setImageResource(android.R.drawable.ic_media_pause);
+            else
+                playButton.setImageResource(android.R.drawable.ic_media_play);
+        }
     }
 }

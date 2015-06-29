@@ -126,8 +126,6 @@ abstract class SharedState extends Observable {
     /**
      * This converts an absolute time, as returned by eventTime, to a relative time
      * that might be displayed
-     * @param eventTime
-     * @return
      */
     public String relativeTimeString(long eventTime) {
         if(running) {

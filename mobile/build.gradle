@@ -70,6 +70,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')     // says that this project has both the mobile and wear components
-
     compile 'com.google.android.gms:play-services-wearable:7.5.0'
 }

@@ -160,9 +160,11 @@ public class StopwatchActivity extends Activity implements Observer {
     }
 
     private void setPlayButtonIcon() {
-        if (stopwatchState.isRunning() && playButton != null)
-            playButton.setImageResource(android.R.drawable.ic_media_pause);
-        else
-            playButton.setImageResource(android.R.drawable.ic_media_play);
+        if(playButton != null) {
+            if (stopwatchState.isRunning())
+                playButton.setImageResource(android.R.drawable.ic_media_pause);
+            else
+                playButton.setImageResource(android.R.drawable.ic_media_play);
+        }
     }
 }

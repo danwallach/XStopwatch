@@ -1,18 +1,29 @@
 package org.dwallach.xstopwatch;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
 
+import java.lang.reflect.Field;
+
 
 public class TimePickerFragment extends DialogFragment {
+    private final static String TAG = "TimePickerFragment";
     private int hours, minutes;
 
     public final static String HOURS_PARAM = "hours";
@@ -37,11 +48,42 @@ public class TimePickerFragment extends DialogFragment {
         // Required empty public constructor
     }
 
+    // this solution adapted from: http://stackoverflow.com/questions/18120840/numberpicker-textcolour
+    public static void setNumberPickerTextColor(NumberPicker numberPicker, int color) {
+        Log.v(TAG, "setting number picker color");
+
+        final int count = numberPicker.getChildCount();
+        for(int i = 0; i < count; i++){
+            View child = numberPicker.getChildAt(i);
+            if(child instanceof EditText){
+                try {
+                    Log.v(TAG, "found an edit text field (" + i + ")");
+                    Field selectorWheelPaintField = numberPicker.getClass()
+                            .getDeclaredField("mSelectorWheelPaint");
+                    selectorWheelPaintField.setAccessible(true);
+                    ((Paint)selectorWheelPaintField.get(numberPicker)).setColor(color);
+                    int oldColor = ((EditText)child).getCurrentTextColor();
+                    Log.v(TAG, String.format("oldColor(%x), newColor(%x)", oldColor, color));
+                    ((EditText)child).setTextColor(color);
+                    numberPicker.invalidate();
+                    return;
+                }
+                catch(NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+                    Log.w(TAG, e);
+                }
+            }
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // nuke the frame around the fragment
+        setStyle(STYLE_NO_FRAME, 0);
+
         // Inflate the layout for this fragment
         View mainView = inflater.inflate(R.layout.fragment_time_picker, container, false);
+
 
         if (getArguments() != null) {
             hours = getArguments().getInt(HOURS_PARAM);
@@ -51,6 +93,10 @@ public class TimePickerFragment extends DialogFragment {
         ImageButton resetButton = (ImageButton) mainView.findViewById(R.id.pickerResetButton);
         final NumberPicker hoursPicker = (NumberPicker) mainView.findViewById(R.id.hoursPicker);
         final NumberPicker minutesPicker = (NumberPicker) mainView.findViewById(R.id.minutesPicker);
+
+        // it's a kludge: not allowed in the styles anywhere so we have to do this awful thing instead
+        setNumberPickerTextColor(hoursPicker, 0xffffffff);
+        setNumberPickerTextColor(minutesPicker, 0xffffffff);
 
         hoursPicker.setMinValue(0);
         hoursPicker.setMaxValue(23);

@@ -1,69 +1,62 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/time_picker_fragment"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context="org.dwallach.xstopwatch.TimePickerFragment"
     android:focusable="false"
     android:touchscreenBlocksFocus="false"
-    android:background="@android:color/white">
+    android:background="?android:attr/selectableItemBackgroundBorderless"
+    android:orientation="vertical"
+    android:measureWithLargestChild="false"
+    android:gravity="center"
+    android:layout_margin="5dp"
+    android:layout_gravity="center"
+    style="@style/AppTheme">
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+        <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/hoursPicker"
+            android:layout_gravity="center_vertical" />
+
+        <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/minutesPicker"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:measureWithLargestChild="false"
         android:gravity="center"
-        android:layout_margin="5dp"
         android:layout_gravity="center"
         android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:baselineAligned="true">
+        android:baselineAligned="true"
+        android:layout_marginTop="5dp">
 
+        <ImageButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/pickerResetButton"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:layout_gravity="left"
+            android:background="@drawable/ripple"
+            android:layout_weight="2" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:gravity="center">
-
-            <NumberPicker
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/hoursPicker"
-                android:layout_gravity="center_vertical" />
-
-            <NumberPicker
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/minutesPicker"
-                android:layout_gravity="center_vertical" />
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:baselineAligned="true"
-            android:layout_marginTop="5dp">
-
-            <ImageButton
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/pickerResetButton"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:layout_gravity="left"
-                android:background="@drawable/ripple"
-                android:layout_weight="2" />
-
-            <ImageButton
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/pickerOkButton"
-                android:src="@android:drawable/ic_menu_set_as"
-                android:layout_gravity="right"
-                android:background="@drawable/ripple"
-                android:layout_weight="2" />
-        </LinearLayout>
+        <ImageButton
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/pickerOkButton"
+            android:src="@android:drawable/ic_menu_set_as"
+            android:layout_gravity="right"
+            android:background="@drawable/ripple"
+            android:layout_weight="2" />
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

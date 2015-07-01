@@ -1,6 +1,7 @@
 package org.dwallach.xstopwatch;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
@@ -55,7 +56,17 @@ public class TimerActivity extends Activity implements Observer {
 
 
     // see http://developer.android.com/guide/topics/ui/controls/pickers.html
-    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+
+    /**
+     * this uses the built-in TimePickerDialog to ask the user to specify the hours and minutes
+     * for the count-down timer. Of course, it works fine on the emulator and on a Moto360, but
+     * totally fails on the LG G Watch and G Watch R, apparently trying to show a full-blown
+     * Material Design awesome thing that was never tuned to fit on a watch. Instead, see
+     * the separate TimePickerFragment class, which might be ugly, but at least it works consistently.
+     *
+     * TODO: move back to this code and kill TimePickerFragment once they fix the bug in Wear
+     */
+    public static class FailedTimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
         private TimerState timerState = TimerState.getSingleton();
 
         @Override
@@ -66,7 +77,7 @@ public class TimerActivity extends Activity implements Observer {
             int hour = (int) (duration / 3600000);
 
             // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute, true);
+            return new TimePickerDialog(getActivity(), AlertDialog.THEME_HOLO_DARK, this, hour, minute, true);
         }
 
         public void onTimeSet(TimePicker view, int hour, int minute) {
@@ -77,7 +88,7 @@ public class TimerActivity extends Activity implements Observer {
 
     // call to this specified in the layout xml files
     public void showTimePickerDialog(View v) {
-        DialogFragment newFragment = new TimePickerFragment();
+        DialogFragment newFragment = TimePickerFragment.newInstance();
         newFragment.show(getFragmentManager(), "timePicker");
     }
 

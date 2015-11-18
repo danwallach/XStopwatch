@@ -5,3 +5,6 @@ is that we can't just start up a notification for an activity that hasn't actual
 
 Given that the notifications are really a bad UI kludge, especially when we have a timer and a stopwatch
 both running at the same time, we're going to leave this alone for now.
+
+TODO See if the TimePicker actually works under Marshmallow
+TODO Long term: ponder merging XStopwatch into CalWatch, using interactive watchface stuff

@@ -8,3 +8,4 @@ both running at the same time, we're going to leave this alone for now.
 
 TODO See if the TimePicker actually works under Marshmallow
 TODO Long term: ponder merging XStopwatch into CalWatch, using interactive watchface stuff
+TODO Dig into "okay google, set a 7 minute timer" -- why is it not consistently telling us what's going on?

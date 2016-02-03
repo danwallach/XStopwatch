@@ -107,9 +107,7 @@ abstract class SharedState: Observable() {
         else
             Math.abs(eventTime) / 1000)
 
-    override fun toString(): String {
-        return relativeTimeString(eventTime())
-    }
+    override fun toString() = relativeTimeString(eventTime())
 
     abstract val actionNotificationClickString: String
 
@@ -124,8 +122,6 @@ abstract class SharedState: Observable() {
     companion object {
         private val TAG = "SharedState"
 
-        fun currentTime(): Long {
-            return System.currentTimeMillis()
-        }
+        fun currentTime() = System.currentTimeMillis()
     }
 }

@@ -76,17 +76,11 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
         val builder = Notification.Builder(context)
 
         if (!isRunning) {
-            builder.addAction(
-                    Notification.Action.Builder(
-                            Icon.createWithResource(context, android.R.drawable.ic_media_play),
-                            "", clickPendingIntent).build())
+            builder.addAction(context, android.R.drawable.ic_media_play, "", clickPendingIntent)
                     .setContentTitle(state.toString())
                     .setContentText(title) // deliberately backwards for these two so the peek card has the important stuff above the fold
         } else {
-            builder.addAction(
-                    Notification.Action.Builder(
-                            Icon.createWithResource(context, android.R.drawable.ic_media_pause),
-                            "", clickPendingIntent).build())
+            builder.addAction(context, android.R.drawable.ic_media_pause, "", clickPendingIntent)
                     .setWhen(eventTime)
                     .setUsesChronometer(true)
                     .setShowWhen(true)
@@ -96,7 +90,7 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
                 .setOngoing(true)
                 .setLocalOnly(true)
                 .setSmallIcon(appIcon)
-                .addAction(appIcon, title, launchPendingIntent)
+                .addAction(context, appIcon, title, launchPendingIntent)
                 .extend(Notification.WearableExtender()
                         .setHintHideIcon(true)
                         .setContentAction(0)
@@ -123,3 +117,20 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
         private val TAG = "NotificationHelper"
     }
 }
+
+/**
+ * The addAction builder that we want to use has been deprecated, "because reasons", so this brings
+ * it back for us. Let's hear it for Kotlin extension methods!
+ */
+fun Notification.Builder.addAction(context: Context, iconId: Int, title: String, intent: PendingIntent?): Notification.Builder =
+    if(intent == null)
+        this
+    else
+        // The only real difference between this and the original Android method, from Notification.Builder,
+        // is the addition of the Context argument, which isn't there in the original and seems necessary for the internal
+        // call to Icon.createWithResources.
+
+        this.addAction(
+                Notification.Action.Builder(
+                        Icon.createWithResource(context, iconId),
+                        title, intent) .build() )

@@ -78,13 +78,13 @@ class StopwatchActivity : Activity(), Observer {
             // the broadcast receiver is alive
             NotificationService.kickStart(this@StopwatchActivity)
 
-            resetButton!!.setOnClickListener {
+            resetButton?.setOnClickListener {
                 StopwatchState.reset(this@StopwatchActivity)
                 PreferencesHelper.savePreferences(this@StopwatchActivity)
                 PreferencesHelper.broadcastPreferences(this@StopwatchActivity, Constants.stopwatchUpdateIntent)
             }
 
-            playButton!!.setOnClickListener {
+            playButton?.setOnClickListener {
                 StopwatchState.click(this@StopwatchActivity)
                 PreferencesHelper.savePreferences(this@StopwatchActivity)
                 PreferencesHelper.broadcastPreferences(this@StopwatchActivity, Constants.stopwatchUpdateIntent)

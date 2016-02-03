@@ -90,8 +90,7 @@ class StopwatchText : View, Observer {
 
         Log.v(TAG, "${shortName} visible: " + visible)
 
-        if (state != null)
-            state!!.isVisible = visible
+        state?.isVisible = visible
 
         if (visible) {
             updateTimeHandler.sendEmptyMessage(MSG_UPDATE_TIME) // now, rather than later
@@ -155,7 +154,7 @@ class StopwatchText : View, Observer {
 
     override fun update(observable: Observable, data: Any) {
         // something changed in the StopwatchState...
-        Log.v(TAG, shortName!! + "update: invalidating text")
+        Log.v(TAG, "${shortName} update: invalidating text")
         updateTimeHandler.removeMessages(MSG_UPDATE_TIME)
         updateTimeHandler.sendEmptyMessage(MSG_UPDATE_TIME) // now, rather than later
     }

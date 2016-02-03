@@ -26,7 +26,7 @@ abstract class SharedState: Observable() {
     var isVisible: Boolean = false
         set(visible) {
             Log.v(TAG, shortName + "visible: " + visible)
-            this.isVisible = visible
+            field = visible
             isInitialized = true
 
             makeUpdateTimestamp()

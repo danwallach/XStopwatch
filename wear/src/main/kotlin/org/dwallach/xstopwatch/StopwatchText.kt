@@ -151,8 +151,7 @@ class StopwatchText : View, Observer {
         canvas.drawText(result, textX, textY, textPaint)
     }
 
-
-    override fun update(observable: Observable, data: Any) {
+    override fun update(observable: Observable?, data: Any?) {
         // something changed in the StopwatchState...
         Log.v(TAG, "${shortName} update: invalidating text")
         updateTimeHandler.removeMessages(MSG_UPDATE_TIME)

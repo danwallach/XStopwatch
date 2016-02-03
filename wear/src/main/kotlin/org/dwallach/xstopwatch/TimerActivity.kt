@@ -234,7 +234,7 @@ class TimerActivity : Activity(), Observer {
         setStopwatchObservers(false)
     }
 
-    override fun update(observable: Observable, data: Any) {
+    override fun update(observable: Observable?, data: Any?) {
         Log.v(TAG, "activity update")
 
         // We might be called on the UI thread or on a service thread; we need to dispatch this

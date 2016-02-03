@@ -16,7 +16,7 @@ class TimePickerFragment private constructor() : DialogFragment() {
     private var minutes: Int = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle): View? {
+                              savedInstanceState: Bundle?): View? {
         // nuke the frame around the fragment
         setStyle(DialogFragment.STYLE_NO_FRAME, 0)
 

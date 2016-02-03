@@ -103,14 +103,16 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
         notifyManager.notify(notificationID, notification)
     }
 
-    override fun update(observable: Observable, data: Any?) {
+    override fun update(observable: Observable?, data: Any?) {
         //        Log.v(TAG, "updating notification state");
-        val sharedState = observable as SharedState
+        if(observable != null) {
+            val sharedState = observable as SharedState
 
-        if (sharedState.isVisible || sharedState.isReset)
-            kill()
-        else
-            notify(sharedState.eventTime(), sharedState.isRunning)
+            if (sharedState.isVisible || sharedState.isReset)
+                kill()
+            else
+                notify(sharedState.eventTime(), sharedState.isRunning)
+        }
     }
 
     companion object {

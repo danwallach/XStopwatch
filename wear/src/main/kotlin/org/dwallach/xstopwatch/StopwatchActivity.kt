@@ -142,7 +142,7 @@ class StopwatchActivity : Activity(), Observer {
         setStopwatchObservers(false)
     }
 
-    override fun update(observable: Observable, data: Any) {
+    override fun update(observable: Observable?, data: Any?) {
         Log.v(TAG, "activity update")
         setPlayButtonIcon()
     }

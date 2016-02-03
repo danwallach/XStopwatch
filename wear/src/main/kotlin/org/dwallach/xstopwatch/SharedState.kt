@@ -101,14 +101,11 @@ abstract class SharedState: Observable() {
      * that might be displayed
      */
     fun relativeTimeString(eventTime: Long): String =
-        if (isRunning) {
-            val timeNow = currentTime()
-            var delta = timeNow - eventTime
-            if (delta < 0) delta = -delta
-            DateUtils.formatElapsedTime(delta / 1000)
-        } else {
-            DateUtils.formatElapsedTime((if(eventTime < 0) eventTime else -eventTime) / 1000)
-        }
+    DateUtils.formatElapsedTime(
+        if (isRunning)
+            Math.abs(currentTime() - eventTime) / 1000
+        else
+            Math.abs(eventTime) / 1000)
 
     override fun toString(): String {
         return relativeTimeString(eventTime())

@@ -6,6 +6,9 @@ is that we can't just start up a notification for an activity that hasn't actual
 Given that the notifications are really a bad UI kludge, especially when we have a timer and a stopwatch
 both running at the same time, we're going to leave this alone for now.
 
+TODO make XStopwatch and XTimer be "always on"
 TODO See if the TimePicker actually works under Marshmallow
+-- nope, still busted
+
 TODO Long term: ponder merging XStopwatch into CalWatch, using interactive watchface stuff
 TODO Dig into "okay google, set a 7 minute timer" -- why is it not consistently telling us what's going on?

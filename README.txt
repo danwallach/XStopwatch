@@ -20,25 +20,30 @@ notes.txt -- ongoing work, notes, to-do items, etc.
 /mobile -- stub for the phone app (no actual code here)
 
 /wear -- code that runs on the watch
-    src/main/java/org/dwallach/xstopwatch/ -- XStopwatch Java files
+    src/main/kotlin/org/dwallach/xstopwatch/ -- XStopwatch Kotlin files
+    (if you dig into the Git history, you'll see that earlier versions
+    were in Java, but it's all Kotlin now, going forward)
 
 If you're looking to make some other stopwatch or count-down timer
 produce broadcast notifications that are compatible with XStopwatch
 and XTimer, then you should go have a look at:
 
-	PreferencesHelper.java: loads and saves persistent state to the Android
+	PreferencesHelper.kt: loads and saves persistent state to the Android
 	shared preferences and also sends out equivalent state as broadcast intents.
-	You can use the same action strings (from Constants.java) to send out intents
+	You can use the same action strings (from Constants.kt) to send out intents
 	with the same sorts of values, and compliant watchfaces should render them
 	properly.
 
-	Receiver.java: you don't just have to send out the state of your stopwatch
+	Receiver.kt: you don't just have to send out the state of your stopwatch
 	or timer when it changes, you have to listen for requests to do the same,
 	which means you need a receiver.
 
 	AndroidManifest.xml: you'll see here where we set up the receiver. Also
-	we have to make sure the service portion (NotificationService.java) starts
+	we have to make sure the service portion (NotificationService.kt) starts
 	up at boot time, so we're ready to respond to these requests.
 
 	Also, make sure to verify that XWatchface and CalWatch properly receive
 	your broadcasts and that you receive theirs.
+
+	(Xwatchface is written in Java and is a very simple example that you might
+	prefer to use if you're trying to render stopwatches and timers.)

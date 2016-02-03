@@ -12,7 +12,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:background="@color/black"
-    style="@style/AppTheme">
+    style="@style/Theme.WearDiag">
 
     <LinearLayout
         android:background="@color/black"

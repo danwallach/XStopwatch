@@ -52,25 +52,27 @@ class TimerActivity : Activity(), Observer {
      * TODO: move back to this code and kill TimePickerFragment once they fix the bug in Wear
      */
     class FailedTimePickerFragment : DialogFragment(), TimePickerDialog.OnTimeSetListener {
-        override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
+        override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             // Use the current time as the default values for the picker
             val duration = TimerState.duration // in milliseconds
             val minute = (duration / 60000 % 60).toInt()
             val hour = (duration / 3600000).toInt()
 
             // Create a new instance of TimePickerDialog and return it
-            return TimePickerDialog(activity, AlertDialog.THEME_HOLO_DARK, this, hour, minute, true)
+            return TimePickerDialog(activity, R.style.Theme_Wearable_Modal, this, hour, minute, true)
         }
 
         override fun onTimeSet(view: TimePicker, hour: Int, minute: Int) {
             // Do something with the time chosen by the user
-            TimerState.setDuration(null, (hour * 3600000 + minute * 60000).toLong())
+            Log.v(TAG, "User selected time: %d:%02d".format(hour, minute))
+            TimerState.setDuration(null, hour * 3600000L + minute * 60000L)
         }
     }
 
     // call to this specified in the layout xml files
     fun showTimePickerDialog(v: View) =
         TimePickerFragment.newInstance().show(fragmentManager, "timePicker")
+//        FailedTimePickerFragment().show(fragmentManager, "timePicker")
 
     // call to this specified in the layout xml files
     fun launchStopwatch(view: View) =

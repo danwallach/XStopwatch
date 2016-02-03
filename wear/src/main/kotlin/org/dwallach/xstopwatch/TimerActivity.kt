@@ -31,7 +31,7 @@ class TimerActivity : Activity(), Observer {
     private var stopwatchText: StopwatchText? = null
 
     class MyHandler(looper: Looper, timerActivity: TimerActivity) : Handler(looper) {
-        private val timerActivityRef: WeakReference<TimerActivity> = WeakReference(timerActivity)
+        private val timerActivityRef = WeakReference(timerActivity)
 
         override fun handleMessage(inputMessage: Message) {
             Log.v(TAG, "button state message received")
@@ -69,10 +69,8 @@ class TimerActivity : Activity(), Observer {
     }
 
     // call to this specified in the layout xml files
-    fun showTimePickerDialog(v: View) {
-        val newFragment = TimePickerFragment.newInstance()
-        newFragment.show(fragmentManager, "timePicker")
-    }
+    fun showTimePickerDialog(v: View) =
+        TimePickerFragment.newInstance().show(fragmentManager, "timePicker")
 
     // call to this specified in the layout xml files
     fun launchStopwatch(view: View) =
@@ -148,7 +146,7 @@ class TimerActivity : Activity(), Observer {
         watch_view_stub.setOnLayoutInflatedListener {
             Log.v(TAG, "onLayoutInflated")
 
-            // note to the reader: it would have been preferable to use the Kotlin "synthetic"
+            // note to the Kotlin reader: it would have been preferable to use the Kotlin "synthetic"
             // support to avoid this whole findViewById nonsense, as we did above for watch_view_stub,
             // but since we've got two different layouts (round and square), the synthetic support
             // isn't smart enough to let us do the right thing. So instead, we get the old-school version.
@@ -176,13 +174,13 @@ class TimerActivity : Activity(), Observer {
                 setStopwatchObservers(true)
             }
 
-            resetButton!!.setOnClickListener {
+            resetButton?.setOnClickListener {
                 TimerState.reset(this@TimerActivity)
                 PreferencesHelper.savePreferences(this@TimerActivity)
                 PreferencesHelper.broadcastPreferences(this@TimerActivity, Constants.timerUpdateIntent)
             }
 
-            playButton!!.setOnClickListener {
+            playButton?.setOnClickListener {
                 TimerState.click(this@TimerActivity)
                 PreferencesHelper.savePreferences(this@TimerActivity)
                 PreferencesHelper.broadcastPreferences(this@TimerActivity, Constants.timerUpdateIntent)

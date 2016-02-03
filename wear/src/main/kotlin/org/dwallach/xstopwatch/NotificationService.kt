@@ -24,9 +24,7 @@ class NotificationService : IntentService(NotificationService.TAG) {
     override fun onHandleIntent(intent: Intent) {
         Log.v(TAG, "onHandleIntent: ${intent.action}")
 
-        val timerState = TimerState.getSingleton()
-
-        if (!timerState.isInitialized)
+        if (!TimerState.isInitialized)
             PreferencesHelper.loadPreferences(this)
 
         val action = intent.action
@@ -41,7 +39,7 @@ class NotificationService : IntentService(NotificationService.TAG) {
             // button. Solution over there: play games with handlers. If the bug arises
             // elsewhere, similar effort will be necessary.
 
-            TimerState.getSingleton().handleTimerComplete(this)
+            TimerState.handleTimerComplete(this)
         } else if (Constants.timerQueryIntent == action || Constants.stopwatchQueryIntent == action) {
             // We're making this an externally facing service, in case somebody wants to launch us to announce
             // the stopwatch or timer status. This shouldn't actually be necessary. If the user starts

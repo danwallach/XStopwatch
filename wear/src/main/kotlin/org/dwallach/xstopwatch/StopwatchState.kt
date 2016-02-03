@@ -28,7 +28,7 @@ object StopwatchState: SharedState() {
         startTime = 0
     }
 
-    override fun reset(context: Context) {
+    override fun reset(context: Context?) {
         Log.v(TAG, "reset")
         priorTime = 0
         startTime = 0

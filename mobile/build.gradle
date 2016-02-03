@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 // idea borrowed from here: http://stackoverflow.com/questions/17097263/automatically-versioning-android-project-from-git-describe-with-android-studio-g
 
@@ -40,11 +41,20 @@ def getVersionName = { ->
     return versionName
 }
 
-
+buildscript {
+    ext.kotlin_version = '1.0.0-beta-4589'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
+    }
+}
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "org.dwallach.xstopwatch"
@@ -58,11 +68,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
-
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
     buildTypes {
         release {
-            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
         }
     }
 }
@@ -70,5 +83,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')     // says that this project has both the mobile and wear components
-    compile 'com.google.android.gms:play-services-wearable:7.5.0'
+
+    compile 'com.google.android.gms:play-services-wearable:8.4.0'
+    compile 'com.android.support:support-v4:23.1.1'
+//    compile 'com.android.support:support-v13:23.1.1'
+    compile 'fr.nicolaspomepuy.androidwearcrashreport:crashreport-mobile:0.6@aar'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

@@ -22,7 +22,7 @@ import java.util.Observer;
 public class StopwatchActivity extends Activity implements Observer {
     private static final String TAG = "StopwatchActivity";
 
-    private StopwatchState stopwatchState = StopwatchState.getSingleton();
+    private StopwatchState stopwatchState = StopwatchState.Companion.getSingleton();
     private ImageButton resetButton;
     private ImageButton playButton;
     private NotificationHelper notificationHelper;
@@ -75,7 +75,7 @@ public class StopwatchActivity extends Activity implements Observer {
 
                 // get the notification service running as well; it will stick around to make sure
                 // the broadcast receiver is alive
-                NotificationService.kickStart(StopwatchActivity.this);
+                NotificationService.Companion.kickStart(StopwatchActivity.this);
 
                 resetButton.setOnClickListener(new View.OnClickListener() {
                     @Override

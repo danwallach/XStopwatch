@@ -35,7 +35,7 @@ public class TimePickerFragment extends DialogFragment {
     public static TimePickerFragment newInstance() {
         TimePickerFragment fragment = new TimePickerFragment();
         Bundle args = new Bundle();
-        long duration = TimerState.getSingleton().getDuration(); // in milliseconds
+        long duration = TimerState.Companion.getSingleton().getDuration(); // in milliseconds
         int minutes = (int) ((duration / 60000) % 60);
         int hours = (int) (duration / 3600000);
         args.putInt(HOURS_PARAM, hours);
@@ -118,7 +118,7 @@ public class TimePickerFragment extends DialogFragment {
             public void onClick(View v) {
                 hours = hoursPicker.getValue();
                 minutes = minutesPicker.getValue();
-                TimerState timerState = TimerState.getSingleton();
+                TimerState timerState = TimerState.Companion.getSingleton();
                 timerState.setDuration(null, hours * 3600000 + minutes * 60000);
 
                 // okay, we're done!

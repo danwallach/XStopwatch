@@ -19,7 +19,7 @@ public class PreferencesHelper {
         SharedPreferences prefs = context.getSharedPreferences(Constants.sharedPrefsStopwatch, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        StopwatchState stopwatchState = StopwatchState.getSingleton();
+        StopwatchState stopwatchState = StopwatchState.Companion.getSingleton();
 
         editor.putLong(Constants.prefStopwatchStartTime, stopwatchState.getStartTime());
         editor.putLong(Constants.prefStopwatchBaseTime, stopwatchState.getPriorTime());
@@ -33,7 +33,7 @@ public class PreferencesHelper {
         prefs = context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE);
         editor = prefs.edit();
 
-        TimerState timerState = TimerState.getSingleton();
+        TimerState timerState = TimerState.Companion.getSingleton();
 
         editor.putLong(Constants.prefTimerStartTime, timerState.getStartTime());
         editor.putLong(Constants.prefTimerPauseElapsed, timerState.getElapsedTime());
@@ -48,8 +48,8 @@ public class PreferencesHelper {
 
     public static void broadcastPreferences(Context context, String action) {
         Log.v(TAG, "broadcastPreferences");
-        StopwatchState stopwatchState = StopwatchState.getSingleton();
-        TimerState timerState = TimerState.getSingleton();
+        StopwatchState stopwatchState = StopwatchState.Companion.getSingleton();
+        TimerState timerState = TimerState.Companion.getSingleton();
 
         // There's a chance that our app is not running but we received the broadcast intent
         // asking for our state to be sent out again. In that case, we'll need to load up
@@ -93,7 +93,7 @@ public class PreferencesHelper {
     public static void loadPreferences(Context context) {
         Log.v(TAG, "loadPreferences");
 
-        StopwatchState stopwatchState = StopwatchState.getSingleton();
+        StopwatchState stopwatchState = StopwatchState.Companion.getSingleton();
         // brackets just so that the variables go away when we leave scope
         {
             SharedPreferences prefs = context.getSharedPreferences(Constants.sharedPrefsStopwatch, Context.MODE_PRIVATE);
@@ -109,7 +109,7 @@ public class PreferencesHelper {
             stopwatchState.restoreState(priorTime, startTime, isRunning, isReset, updateTimestamp);
         }
 
-        TimerState timerState = TimerState.getSingleton();
+        TimerState timerState = TimerState.Companion.getSingleton();
         {
             SharedPreferences prefs = context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE);
 

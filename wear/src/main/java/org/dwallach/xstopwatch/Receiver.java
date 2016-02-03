@@ -26,7 +26,7 @@ public class Receiver extends BroadcastReceiver {
                 // will arrive. The purpose of the notification is to start up our NotificationService. It's
                 // job is to sit around waiting for queries from other apps for the state of the stopwatch
                 // and timer.
-                NotificationService.kickStart(context);
+                NotificationService.Companion.kickStart(context);
                 break;
             case Constants.stopwatchStartStopIntent:
                 // When we display notifications, after the user swipes away the stopwatch or timer app,
@@ -37,19 +37,19 @@ public class Receiver extends BroadcastReceiver {
                 // have other side effects like changing the notification). We save our state and send
                 // out a new broadcast to anybody listening.
                 Log.v(TAG, "stopwatch remote click");
-                StopwatchState.getSingleton().click(context);
+                StopwatchState.Companion.getSingleton().click(context);
                 PreferencesHelper.savePreferences(context);
                 PreferencesHelper.broadcastPreferences(context, Constants.stopwatchQueryIntent);
                 break;
             case Constants.actionTimerComplete:
                 // this isn't supposed to happen here: the timer is supposed to launch the service instead
                 Log.v(TAG, "timer complete!");
-                TimerState.getSingleton().handleTimerComplete(context);
+                TimerState.Companion.getSingleton().handleTimerComplete(context);
                 break;
             case Constants.timerStartStopIntent:
                 // See discussion above for StopwatchState. Same deal.
                 Log.v(TAG, "timer remote click");
-                TimerState.getSingleton().click(context);
+                TimerState.Companion.getSingleton().click(context);
                 PreferencesHelper.savePreferences(context);
                 PreferencesHelper.broadcastPreferences(context, Constants.timerQueryIntent);
                 break;

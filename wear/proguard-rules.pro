@@ -14,4 +14,6 @@
 -keep public class org.dwallach.xstopwatch.StopwatchActivity
 -keep public class org.dwallach.xstopwatch.TimerActivity
 
+-dontwarn kotlin.**
+
 -dontobfuscate

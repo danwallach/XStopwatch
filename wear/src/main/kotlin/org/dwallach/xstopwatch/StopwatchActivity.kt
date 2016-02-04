@@ -42,30 +42,7 @@ class StopwatchActivity : Activity(), Observer {
             Log.e(TAG, "couldn't read version", e)
         }
 
-        // There's a chance we were launched through a specific intent to start a stopwatch.
-        // This is how we figure it out.
-        val intent = intent
-        val action = intent.action
-
-        Log.v(TAG, "intent action: $action")
-
-        val allExtras = intent.extras
-        if (allExtras != null) {
-            val keySet = allExtras.keySet()
-
-            // because we're trying to figure out what's actually in here
-            for (key in keySet) {
-                try {
-                    Log.v(TAG, "--- found extra: %s -> %s".format(key, allExtras.get(key).toString()))
-                } catch (npe: NullPointerException) {
-                    // rare chance of failure with get(key) above returning null; ignore
-                    // and move on
-                }
-
-            }
-        } else {
-            Log.v(TAG, "--- no extras found!")
-        }
+        intent.log(TAG) // dumps info from the intent into the log
 
         setContentView(R.layout.activity_stopwatch)
 
@@ -183,3 +160,4 @@ class StopwatchActivity : Activity(), Observer {
         private val TAG = "StopwatchActivity"
     }
 }
+

@@ -94,32 +94,33 @@ class TimerActivity : Activity(), Observer {
             Log.e(TAG, "couldn't read version", e)
         }
 
+        intent.log(TAG) // dumps info from the intent into the log
+
         // there's a chance we were launched through a specific intent to set a timer for
         // a particular length; this is how we figure it out
-        val intent = intent
-        val action = intent.action
         val paramLength = intent.getIntExtra(AlarmClock.EXTRA_LENGTH, 0)
-        val skipUI = intent.getBooleanExtra(AlarmClock.EXTRA_SKIP_UI, false)
 
-        Log.v(TAG, "intent action: $action, length($paramLength)")
+        // this used to be set to true, but not in recent Android Wear versions. We used
+        // to default to "false", meaning we'd put up the activity and wouldn't start it.
+        // We now default to "true", meaning we'll still put up the activity, but we'll
+        // also start the timer.
+        val skipUI = intent.getBooleanExtra(AlarmClock.EXTRA_SKIP_UI, true)
 
-        val allExtras = intent.extras
-        if (allExtras != null) {
-            val keySet = allExtras.keySet()
+        // Google's docs say: This action requests a timer to be started for a specific length of time.
+        // If no length is specified, the implementation should start an activity that is capable of
+        // setting a timer (EXTRA_SKIP_UI is ignored in this case). If a length is specified, and
+        // EXTRA_SKIP_UI is true, the implementation should remove this timer after it has been dismissed.
+        // If an identical, unused timer exists matching both parameters, an implementation may re-use
+        // it instead of creating a new one (in this case, the timer should not be removed after dismissal).
+        // This action always starts the timer.
+        // (http://developer.android.com/reference/android/provider/AlarmClock.html)
 
-            // because we're trying to figure out what's actually in here
-            for (key in keySet) {
-                try {
-                    Log.v(TAG, "--- found extra: %s -> %s".format(key, allExtras.get(key).toString()))
-                } catch (npe: NullPointerException) {
-                    // rare chance of failure with get(key) above returning null; ignore
-                    // and move on
-                }
-
-            }
-        } else {
-            Log.v(TAG, "--- no extras found!")
-        }
+        // Here's what we're going to do. In this app, we want to support only one timer, rather than
+        // the multiple timers suggested by the documentation above. Our solution, at least for now:
+        // if an intent comes in while a timer is running, the old one is nuked and the new one is it.
+        // We're going to assume that SKIP_UI is true and treat that a hint to start the timer. If it's
+        // explicitly false, which doesn't seem likely, then we'll assume that Android is telling us
+        // to have more user interaction, and therefore we won't auto-start the timer.
 
         if (paramLength > 0 && paramLength <= 86400) {
             Log.v(TAG, "onCreate, somebody told us a time value: $paramLength")

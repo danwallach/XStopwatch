@@ -18,6 +18,8 @@ import android.util.Log
 import java.util.Observable
 import java.util.Observer
 
+import org.jetbrains.anko.*
+
 class NotificationHelper(private val context: Context, private val appIcon: Int, private val title: String, private val state: SharedState) : Observer {
 
     private val notificationID = state.notificationID
@@ -34,10 +36,8 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
         Log.v(TAG, "nuking any notifications")
 
         try {
-            // Gets an instance of the NotificationManager service
-            val notifyManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             // Builds the notification and issues it.
-            notifyManager.cancel(notificationID)
+            context.notificationManager.cancel(notificationID)
 
             clickPendingIntent?.cancel()
             clickPendingIntent = null
@@ -99,8 +99,7 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
                 .build()
 
         // launch the notification
-        val notifyManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notifyManager.notify(notificationID, notification)
+        context.notificationManager.notify(notificationID, notification)
     }
 
     override fun update(observable: Observable?, data: Any?) {

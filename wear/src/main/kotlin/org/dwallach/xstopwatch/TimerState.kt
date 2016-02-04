@@ -15,6 +15,8 @@ import android.media.AudioAttributes
 import android.os.Vibrator
 import android.util.Log
 
+import org.jetbrains.anko.*
+
 object TimerState: SharedState() {
 
     /**
@@ -135,7 +137,7 @@ object TimerState: SharedState() {
             return
         }
 
-        val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarm = context.alarmManager
 
         // Create intent that gets fired when the timer expires.
 
@@ -157,7 +159,7 @@ object TimerState: SharedState() {
             return
         }
 
-        val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarm = context.alarmManager
 
         val intent = Intent(Constants.actionTimerComplete, null, context, NotificationService::class.java)
         val pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -177,8 +179,7 @@ object TimerState: SharedState() {
         PreferencesHelper.savePreferences(context)
         PreferencesHelper.broadcastPreferences(context, Constants.timerUpdateIntent)
 
-        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        vibrator.vibrate(vibratorPattern, -1, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build())
+        context.vibrator.vibrate(vibratorPattern, -1, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build())
     }
 
     override val iconID: Int

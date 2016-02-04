@@ -44,6 +44,10 @@ class StopwatchActivity : Activity(), Observer {
 
         intent.log(TAG) // dumps info from the intent into the log
 
+        // if the user said "OK Google, start stopwatch", then this is how we can tell
+        if(intent.action == "com.google.android.wearable.action.STOPWATCH")
+            StopwatchState.run(this)
+
         setContentView(R.layout.activity_stopwatch)
 
         watch_view_stub.setOnLayoutInflatedListener {

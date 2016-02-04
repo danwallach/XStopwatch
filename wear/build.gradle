@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 // idea borrowed from here: http://stackoverflow.com/questions/17097263/automatically-versioning-android-project-from-git-describe-with-android-studio-g
 
@@ -42,16 +42,18 @@ def getVersionName = { ->
 }
 
 buildscript {
-    ext.kotlin_version = '1.0.0-beta-4589'
+    ext.kotlin_version = '1.0.0-rc-1036'
     repositories {
         mavenCentral()
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-eap/'
+        }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
     }
 }
-
 
 android {
     compileSdkVersion 23
@@ -63,11 +65,6 @@ android {
         targetSdkVersion 22   // Android 5.1, Lollipop
         versionCode getVersionCode()
         versionName getVersionName()
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
     }
 
     sourceSets {
@@ -85,6 +82,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
     compile 'com.google.android.gms:play-services-wearable:8.4.0'
     compile 'com.android.support:support-v4:23.1.1'
 //    compile 'com.android.support:support-v13:23.1.1'
@@ -92,3 +90,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://dl.bintray.com/kotlin/kotlin-eap/'
+    }
+}

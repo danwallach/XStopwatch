@@ -63,7 +63,7 @@ android {
     defaultConfig {
         applicationId "org.dwallach.xstopwatch"
         minSdkVersion 22      // Android 5.1, Lollipop
-        targetSdkVersion 22   // Android 5.1, Lollipop
+        targetSdkVersion 23   // Android 6.0, Marshmallow, the newest
         versionCode getVersionCode()
         versionName getVersionName()
     }

@@ -14,7 +14,7 @@ import android.util.Log
  * Dumps all of the interesting contents of an intent to the log.
  */
 fun Intent.log(tag: String) {
-    Log.v(tag, "intent action($action), dataString($dataString), flags($flags), type($type)")
+    Log.v(tag, "intent action($action), dataString($dataString), flags(0x%x), type($type)".format(flags))
 
     categories?.forEach {
         Log.v(tag, "--- found category: ${it}")

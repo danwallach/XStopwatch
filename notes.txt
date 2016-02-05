@@ -12,63 +12,6 @@ TODO See if the TimePicker actually works under Marshmallow
 
 TODO Long term: ponder merging XStopwatch into CalWatch, using interactive watchface stuff
 
-Need to fix this:
+TODO deal with deprecated "addAction" API in Notification.Builder.addAction
+-- initial attempt crashed with weird stack dumps, couldn't find the method
 
-02-04 18:04:32.461 3939-3939/? E/AndroidRuntime: FATAL EXCEPTION: main
-                                                 Process: org.dwallach.xstopwatch, PID: 3939
-                                                 java.lang.NoClassDefFoundError: Failed resolution of: Landroid/graphics/drawable/Icon;
-                                                     at org.dwallach.xstopwatch.NotificationHelperKt.addAction(NotificationHelper.kt:134)
-                                                     at org.dwallach.xstopwatch.NotificationHelper.notify(NotificationHelper.kt:83)
-                                                     at org.dwallach.xstopwatch.NotificationHelper.update(NotificationHelper.kt:113)
-                                                     at java.util.Observable.notifyObservers(Observable.java:138)
-                                                     at java.util.Observable.notifyObservers(Observable.java:113)
-                                                     at org.dwallach.xstopwatch.SharedState.pingObservers(SharedState.kt:85)
-                                                     at org.dwallach.xstopwatch.SharedState.setVisible(SharedState.kt:33)
-                                                     at org.dwallach.xstopwatch.StopwatchActivity.onPause(StopwatchActivity.kt:151)
-                                                     at android.app.Activity.performPause(Activity.java:6101)
-                                                     at android.app.Instrumentation.callActivityOnPause(Instrumentation.java:1310)
-                                                     at android.app.ActivityThread.performPauseActivity(ActivityThread.java:3246)
-                                                     at android.app.ActivityThread.performPauseActivity(ActivityThread.java:3219)
-                                                     at android.app.ActivityThread.handlePauseActivity(ActivityThread.java:3194)
-                                                     at android.app.ActivityThread.access$1000(ActivityThread.java:151)
-                                                     at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1321)
-                                                     at android.os.Handler.dispatchMessage(Handler.java:102)
-                                                     at android.os.Looper.loop(Looper.java:135)
-                                                     at android.app.ActivityThread.main(ActivityThread.java:5254)
-                                                     at java.lang.reflect.Method.invoke(Native Method)
-                                                     at java.lang.reflect.Method.invoke(Method.java:372)
-                                                     at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:903)
-                                                     at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:698)
-                                                  Caused by: java.lang.ClassNotFoundException: Didn't find class "android.graphics.drawable.Icon" on path: DexPathList[[zip file "/data/app/org.dwallach.xstopwatch-1/base.apk"],nativeLibraryDirectories=[/vendor/lib, /system/lib]]
-                                                     at dalvik.system.BaseDexClassLoader.findClass(BaseDexClassLoader.java:56)
-                                                     at java.lang.ClassLoader.loadClass(ClassLoader.java:511)
-                                                     at java.lang.ClassLoader.loadClass(ClassLoader.java:469)
-                                                     at org.dwallach.xstopwatch.NotificationHelperKt.addAction(NotificationHelper.kt:134) 
-                                                     at org.dwallach.xstopwatch.NotificationHelper.notify(NotificationHelper.kt:83) 
-                                                     at org.dwallach.xstopwatch.NotificationHelper.update(NotificationHelper.kt:113) 
-                                                     at java.util.Observable.notifyObservers(Observable.java:138) 
-                                                     at java.util.Observable.notifyObservers(Observable.java:113) 
-                                                     at org.dwallach.xstopwatch.SharedState.pingObservers(SharedState.kt:85) 
-                                                     at org.dwallach.xstopwatch.SharedState.setVisible(SharedState.kt:33) 
-                                                     at org.dwallach.xstopwatch.StopwatchActivity.onPause(StopwatchActivity.kt:151) 
-                                                     at android.app.Activity.performPause(Activity.java:6101) 
-                                                     at android.app.Instrumentation.callActivityOnPause(Instrumentation.java:1310) 
-                                                     at android.app.ActivityThread.performPauseActivity(ActivityThread.java:3246) 
-                                                     at android.app.ActivityThread.performPauseActivity(ActivityThread.java:3219) 
-                                                     at android.app.ActivityThread.handlePauseActivity(ActivityThread.java:3194) 
-                                                     at android.app.ActivityThread.access$1000(ActivityThread.java:151) 
-                                                     at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1321) 
-                                                     at android.os.Handler.dispatchMessage(Handler.java:102) 
-                                                     at android.os.Looper.loop(Looper.java:135) 
-                                                     at android.app.ActivityThread.main(ActivityThread.java:5254) 
-                                                     at java.lang.reflect.Method.invoke(Native Method) 
-                                                     at java.lang.reflect.Method.invoke(Method.java:372) 
-                                                     at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:903) 
-                                                     at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:698) 
-                                                 	Suppressed: java.lang.ClassNotFoundException: android.graphics.drawable.Icon
-                                                     at java.lang.Class.classForName(Native Method)
-                                                     at java.lang.BootClassLoader.findClass(ClassLoader.java:781)
-                                                     at java.lang.BootClassLoader.loadClass(ClassLoader.java:841)
-                                                     at java.lang.ClassLoader.loadClass(ClassLoader.java:504)
-                                                     		... 23 more
-                                                  Caused by: java.lang.NoClassDefFoundError: Class not found using the boot class loader; no stack available

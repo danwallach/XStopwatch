@@ -127,11 +127,14 @@ fun Notification.Builder.addAction(context: Context, iconId: Int, title: String,
     if(intent == null)
         this
     else
-        // The only real difference between this and the original Android method, from Notification.Builder,
-        // is the addition of the Context argument, which isn't there in the original and seems necessary for the internal
-        // call to Icon.createWithResources.
+        this.addAction(iconId, title, intent)
 
-        this.addAction(
-                Notification.Action.Builder(
-                        Icon.createWithResource(context, iconId),
-                        title, intent) .build() )
+// The above call to addAction is deprecated. Below is my attempt to solve this, but it turns out to crash
+// in a funny way, saying it can't find Icon.createWithResources at runtime. Weird. We'll just leave this
+// here for now, and sort this out later if/when the deprecated method finally dies and we're forced to deal
+// with it. For now, "if it ain't broke, don't fix it."
+
+//        this.addAction(
+//                Notification.Action.Builder(
+//                        Icon.createWithResource(context, iconId),
+//                        title, intent) .build() )

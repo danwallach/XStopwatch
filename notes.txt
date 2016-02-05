@@ -7,6 +7,15 @@ Given that the notifications are really a bad UI kludge, especially when we have
 both running at the same time, we're going to leave this alone for now.
 
 TODO make XStopwatch and XTimer be "always on"
+  Basic API support is easy enough
+     TODO just declare that we're supporting ambient mode, appropriate callbacks
+     TODO set up alarm timer
+     http://developer.android.com/training/wearables/apps/always-on.html
+  TODO need to have a whole other rendering mode with black&white (no antialias)
+  TODO add a small clock on top for ambient mode (recommended practice)
+  TODO ambient layout: how to switch back and forth? fragments? programmatically change the current layout?
+     -- crazy idea, make our StopwatchText widget be taller and overlapping with the existing widgets, play transparency games
+
 TODO See if the TimePicker actually works under Marshmallow
 -- nope, still busted
 

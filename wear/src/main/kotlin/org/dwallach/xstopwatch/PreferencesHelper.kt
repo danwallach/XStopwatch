@@ -8,38 +8,37 @@ package org.dwallach.xstopwatch
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.util.Log
+
+import org.jetbrains.anko.*
 
 object PreferencesHelper {
     private val TAG = "PreferencesHelper"
 
     fun savePreferences(context: Context) {
         Log.v(TAG, "savePreferences")
-        var prefs = context.getSharedPreferences(Constants.sharedPrefsStopwatch, Context.MODE_PRIVATE)
-        var editor: SharedPreferences.Editor = prefs.edit().let {
-            it.putLong(Constants.prefStopwatchStartTime, StopwatchState.startTime)
-            it.putLong(Constants.prefStopwatchBaseTime, StopwatchState.priorTime)
-            it.putBoolean(Constants.prefStopwatchRunning, StopwatchState.isRunning)
-            it.putBoolean(Constants.prefStopwatchReset, StopwatchState.isReset)
-            it.putLong(Constants.prefStopwatchUpdateTimestamp, StopwatchState.updateTimestamp)
+        context.getSharedPreferences(Constants.sharedPrefsStopwatch, Context.MODE_PRIVATE).edit().apply {
+            putLong(Constants.prefStopwatchStartTime, StopwatchState.startTime)
+            putLong(Constants.prefStopwatchBaseTime, StopwatchState.priorTime)
+            putBoolean(Constants.prefStopwatchRunning, StopwatchState.isRunning)
+            putBoolean(Constants.prefStopwatchReset, StopwatchState.isReset)
+            putLong(Constants.prefStopwatchUpdateTimestamp, StopwatchState.updateTimestamp)
+
+            if (!commit())
+                Log.v(TAG, "savePreferences commit failed ?!")
         }
 
-        if (!editor.commit())
-            Log.v(TAG, "savePreferences commit failed ?!")
+        context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE).edit().apply {
+            putLong(Constants.prefTimerStartTime, TimerState.startTime)
+            putLong(Constants.prefTimerPauseElapsed, TimerState.elapsedTime)
+            putLong(Constants.prefTimerDuration, TimerState.duration)
+            putBoolean(Constants.prefTimerRunning, TimerState.isRunning)
+            putBoolean(Constants.prefTimerReset, TimerState.isReset)
+            putLong(Constants.prefTimerUpdateTimestamp, TimerState.updateTimestamp)
 
-        var prefs2 = context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE)
-        var editor2 = prefs.edit().let {
-            it.putLong(Constants.prefTimerStartTime, TimerState.startTime)
-            it.putLong(Constants.prefTimerPauseElapsed, TimerState.elapsedTime)
-            it.putLong(Constants.prefTimerDuration, TimerState.duration)
-            it.putBoolean(Constants.prefTimerRunning, TimerState.isRunning)
-            it.putBoolean(Constants.prefTimerReset, TimerState.isReset)
-            it.putLong(Constants.prefTimerUpdateTimestamp, TimerState.updateTimestamp)
+            if (!commit())
+                Log.v(TAG, "savePreferences commit failed ?!")
         }
-
-        if (!editor2.commit())
-            Log.v(TAG, "savePreferences commit failed ?!")
     }
 
     fun broadcastPreferences(context: Context, action: String?) {
@@ -57,12 +56,12 @@ object PreferencesHelper {
                 Log.e(TAG, "stopwatch state not initialized, can't broadcast preferences")
             } else {
                 Log.v(TAG, "broadcasting stopwatch preferences")
-                context.sendBroadcast(Intent(Constants.stopwatchUpdateIntent).let {
-                    it.putExtra(Constants.prefStopwatchStartTime, StopwatchState.startTime)
-                    it.putExtra(Constants.prefStopwatchBaseTime, StopwatchState.priorTime)
-                    it.putExtra(Constants.prefStopwatchRunning, StopwatchState.isRunning)
-                    it.putExtra(Constants.prefStopwatchReset, StopwatchState.isReset)
-                    it.putExtra(Constants.prefStopwatchUpdateTimestamp, StopwatchState.updateTimestamp)
+                context.sendBroadcast(Intent(Constants.stopwatchUpdateIntent).apply {
+                    putExtra(Constants.prefStopwatchStartTime, StopwatchState.startTime)
+                    putExtra(Constants.prefStopwatchBaseTime, StopwatchState.priorTime)
+                    putExtra(Constants.prefStopwatchRunning, StopwatchState.isRunning)
+                    putExtra(Constants.prefStopwatchReset, StopwatchState.isReset)
+                    putExtra(Constants.prefStopwatchUpdateTimestamp, StopwatchState.updateTimestamp)
                 })
             }
         }
@@ -72,13 +71,13 @@ object PreferencesHelper {
                 Log.e(TAG, "timer state not initialized, can't broadcast preferences")
             } else {
                 Log.v(TAG, "broadcasting timer preferences")
-                context.sendBroadcast(Intent(Constants.timerUpdateIntent).let {
-                    it.putExtra(Constants.prefTimerStartTime, TimerState.startTime)
-                    it.putExtra(Constants.prefTimerPauseElapsed, TimerState.elapsedTime)
-                    it.putExtra(Constants.prefTimerDuration, TimerState.duration)
-                    it.putExtra(Constants.prefTimerRunning, TimerState.isRunning)
-                    it.putExtra(Constants.prefTimerReset, TimerState.isReset)
-                    it.putExtra(Constants.prefTimerUpdateTimestamp, TimerState.updateTimestamp)
+                context.sendBroadcast(Intent(Constants.timerUpdateIntent).apply {
+                    putExtra(Constants.prefTimerStartTime, TimerState.startTime)
+                    putExtra(Constants.prefTimerPauseElapsed, TimerState.elapsedTime)
+                    putExtra(Constants.prefTimerDuration, TimerState.duration)
+                    putExtra(Constants.prefTimerRunning, TimerState.isRunning)
+                    putExtra(Constants.prefTimerReset, TimerState.isReset)
+                    putExtra(Constants.prefTimerUpdateTimestamp, TimerState.updateTimestamp)
                 })
             }
         }
@@ -88,29 +87,25 @@ object PreferencesHelper {
         Log.v(TAG, "loadPreferences")
 
         // brackets just so that the variables go away when we leave scope
-        run {
-            val prefs = context.getSharedPreferences(Constants.sharedPrefsStopwatch, Context.MODE_PRIVATE)
-
-            val priorTime = prefs.getLong(Constants.prefStopwatchBaseTime, 0L)
-            val startTime = prefs.getLong(Constants.prefStopwatchStartTime, 0L)
-            val isRunning = prefs.getBoolean(Constants.prefStopwatchRunning, false)
-            val isReset = prefs.getBoolean(Constants.prefStopwatchReset, true)
-            val updateTimestamp = prefs.getLong(Constants.prefStopwatchUpdateTimestamp, 0L)
+        context.getSharedPreferences(Constants.sharedPrefsStopwatch, Context.MODE_PRIVATE).apply {
+            val priorTime = getLong(Constants.prefStopwatchBaseTime, 0L)
+            val startTime = getLong(Constants.prefStopwatchStartTime, 0L)
+            val isRunning = getBoolean(Constants.prefStopwatchRunning, false)
+            val isReset = getBoolean(Constants.prefStopwatchReset, true)
+            val updateTimestamp = getLong(Constants.prefStopwatchUpdateTimestamp, 0L)
 
             Log.v(TAG, "Stopwatch:: startTime($startTime), priorTime($priorTime), isRunning($isRunning), isReset($isReset), updateTimestamp($updateTimestamp)")
 
             StopwatchState.restoreState(priorTime, startTime, isRunning, isReset, updateTimestamp)
         }
 
-        run {
-            val prefs = context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE)
-
-            val startTime = prefs.getLong(Constants.prefTimerStartTime, 0L)
-            val pauseDelta = prefs.getLong(Constants.prefTimerPauseElapsed, 0L)
-            val duration = prefs.getLong(Constants.prefTimerDuration, 0L)
-            var isRunning = prefs.getBoolean(Constants.prefTimerRunning, false)
-            var isReset = prefs.getBoolean(Constants.prefTimerReset, true)
-            val updateTimestamp = prefs.getLong(Constants.prefTimerUpdateTimestamp, 0L)
+        context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE).apply {
+            val startTime = getLong(Constants.prefTimerStartTime, 0L)
+            val pauseDelta = getLong(Constants.prefTimerPauseElapsed, 0L)
+            val duration = getLong(Constants.prefTimerDuration, 0L)
+            var isRunning = getBoolean(Constants.prefTimerRunning, false)
+            var isReset = getBoolean(Constants.prefTimerReset, true)
+            val updateTimestamp = getLong(Constants.prefTimerUpdateTimestamp, 0L)
 
             // sanity checking: if we're coming back from whatever, and we discover that we *used* to
             // be running, but we've gotten way past the deadline, then just reset things.

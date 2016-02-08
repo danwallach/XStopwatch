@@ -188,5 +188,5 @@ object TimerState: SharedState() {
     override val shortName: String
         get() = "[Timer] "
 
-    private val TAG = "TimerState"
+    private const val TAG = "TimerState"
 }

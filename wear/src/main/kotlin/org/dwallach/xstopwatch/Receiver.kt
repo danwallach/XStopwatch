@@ -12,6 +12,7 @@ import android.content.Intent
 import android.util.Log
 
 class Receiver : BroadcastReceiver() {
+    private val TAG = "Receiver"
 
     override fun onReceive(context: Context, intent: Intent) {
         Log.v(TAG, "got intent: ${intent.toString()}")
@@ -65,7 +66,4 @@ class Receiver : BroadcastReceiver() {
         }
     }
 
-    companion object {
-        private val TAG = "Receiver"
-    }
 }

@@ -62,7 +62,7 @@ class TimePickerFragment private constructor() : DialogFragment() {
     }
 
     companion object {
-        private val TAG = "TimePickerFragment"
+        private const val TAG = "TimePickerFragment"
 
         const val HOURS_PARAM = "hours"
         const val MINUTES_PARAM = "minutes"

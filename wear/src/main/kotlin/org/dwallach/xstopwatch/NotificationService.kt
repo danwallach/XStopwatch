@@ -11,14 +11,16 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 
-class NotificationService : IntentService(NotificationService.TAG) {
+import org.jetbrains.anko.*
 
+class NotificationService : IntentService(NotificationService.TAG) {
     init {
         singletonService = this
     }
 
     override fun onCreate() {
         super.onCreate()
+        Log.v(TAG, "onCreate")
     }
 
     override fun onHandleIntent(intent: Intent) {
@@ -46,6 +48,7 @@ class NotificationService : IntentService(NotificationService.TAG) {
             // the stopwatch or timer, then the service will be persistent (or as persistent as Android
             // Wear is willing to be when somebody calls startService()) and will respond to broadcast
             // intents that don't particularly target us.
+
             Log.v(TAG, "broadcast request!")
             PreferencesHelper.broadcastPreferences(this, action)
         } else {
@@ -68,9 +71,11 @@ class NotificationService : IntentService(NotificationService.TAG) {
         fun kickStart(ctx: Context) {
             if (singletonService == null) {
                 Log.v(TAG, "launching watch calendar service")
-                val serviceIntent = Intent(ctx, NotificationService::class.java)
-                serviceIntent.setAction(Intent.ACTION_DEFAULT)
-                ctx.startService(serviceIntent)
+                // Anko alternative to the three lines below
+                ctx.startService(ctx.intentFor<NotificationService>().setAction(Intent.ACTION_DEFAULT))
+//                val serviceIntent = Intent(ctx, NotificationService::class.java)
+//                serviceIntent.setAction(Intent.ACTION_DEFAULT)
+//                ctx.startService(serviceIntent)
             }
         }
     }

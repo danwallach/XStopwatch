@@ -71,20 +71,19 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
 
         val bg = BitmapFactory.decodeResource(context.resources, state.iconID)
 
-        val builder = Notification.Builder(context)
-
-        if (!isRunning) {
-            builder.addAction(context, android.R.drawable.ic_media_play, "", clickPendingIntent)
-                    .setContentTitle(state.toString())
-                    .setContentText(title) // deliberately backwards for these two so the peek card has the important stuff above the fold
-        } else {
-            builder.addAction(context, android.R.drawable.ic_media_pause, "", clickPendingIntent)
-                    .setWhen(eventTime)
-                    .setUsesChronometer(true)
-                    .setShowWhen(true)
+        val notification = Notification.Builder(context).let {
+            // "it" is just the builder created above, which we need to treat differently if
+            // the timer / stopwatch is running vs. paused
+            if(!isRunning)
+                it.addAction(context, android.R.drawable.ic_media_play, "", clickPendingIntent)
+                        .setContentTitle(state.toString())
+                        .setContentText(title) // deliberately backwards for these two so the peek card has the important stuff above the fold
+            else
+                it.addAction(context, android.R.drawable.ic_media_pause, "", clickPendingIntent)
+                        .setWhen(eventTime)
+                        .setUsesChronometer(true)
+                        .setShowWhen(true)
         }
-
-        val notification = builder
                 .setOngoing(true)
                 .setLocalOnly(true)
                 .setSmallIcon(appIcon)
@@ -92,7 +91,6 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
                 .extend(Notification.WearableExtender()
                         .setHintHideIcon(true)
                         .setContentAction(0)
-                        //                        .setCustomSizePreset(Notification.WearableExtender.SIZE_LARGE)
                         .setBackground(bg))
                 .build()
 

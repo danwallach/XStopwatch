@@ -90,5 +90,5 @@ object StopwatchState: SharedState() {
     override val shortName: String
         get() = "[Stopwatch] "
 
-    private val TAG = "StopwatchState"
+    private const val TAG = "StopwatchState"
 }

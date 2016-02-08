@@ -1,11 +1,9 @@
 package org.dwallach.xstopwatch
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
 import android.app.DialogFragment
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
@@ -22,6 +20,7 @@ import java.util.Observable
 import java.util.Observer
 
 import kotlinx.android.synthetic.main.activity_timer.*
+import org.jetbrains.anko.*
 
 class TimerActivity : Activity(), Observer {
     private var notificationHelper: NotificationHelper? = null
@@ -75,8 +74,7 @@ class TimerActivity : Activity(), Observer {
 //        FailedTimePickerFragment().show(fragmentManager, "timePicker")
 
     // call to this specified in the layout xml files
-    fun launchStopwatch(view: View) =
-        startActivity(Intent(this, StopwatchActivity::class.java))
+    fun launchStopwatch(view: View) = startActivity<StopwatchActivity>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -256,6 +254,6 @@ class TimerActivity : Activity(), Observer {
     }
 
     companion object {
-        private val TAG = "TimerActivity"
+        private const val TAG = "TimerActivity"
     }
 }

@@ -7,7 +7,6 @@
 package org.dwallach.xstopwatch
 
 import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +17,7 @@ import java.util.Observable
 import java.util.Observer
 
 import kotlinx.android.synthetic.main.activity_stopwatch.*
+import org.jetbrains.anko.*
 
 class StopwatchActivity : Activity(), Observer {
 
@@ -103,8 +103,7 @@ class StopwatchActivity : Activity(), Observer {
     }
 
     // call to this specified in the layout xml files
-    fun launchTimer(view: View) =
-        startActivity(Intent(this, TimerActivity::class.java))
+    fun launchTimer(view: View) = startActivity<TimerActivity>()
 
     /**
      * install the observers that care about the stopwatchState: "this", which updates the

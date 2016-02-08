@@ -17,28 +17,28 @@ object PreferencesHelper {
     fun savePreferences(context: Context) {
         Log.v(TAG, "savePreferences")
         var prefs = context.getSharedPreferences(Constants.sharedPrefsStopwatch, Context.MODE_PRIVATE)
-        var editor: SharedPreferences.Editor = prefs.edit()
-
-        editor.putLong(Constants.prefStopwatchStartTime, StopwatchState.startTime)
-        editor.putLong(Constants.prefStopwatchBaseTime, StopwatchState.priorTime)
-        editor.putBoolean(Constants.prefStopwatchRunning, StopwatchState.isRunning)
-        editor.putBoolean(Constants.prefStopwatchReset, StopwatchState.isReset)
-        editor.putLong(Constants.prefStopwatchUpdateTimestamp, StopwatchState.updateTimestamp)
+        var editor: SharedPreferences.Editor = prefs.edit().let {
+            it.putLong(Constants.prefStopwatchStartTime, StopwatchState.startTime)
+            it.putLong(Constants.prefStopwatchBaseTime, StopwatchState.priorTime)
+            it.putBoolean(Constants.prefStopwatchRunning, StopwatchState.isRunning)
+            it.putBoolean(Constants.prefStopwatchReset, StopwatchState.isReset)
+            it.putLong(Constants.prefStopwatchUpdateTimestamp, StopwatchState.updateTimestamp)
+        }
 
         if (!editor.commit())
             Log.v(TAG, "savePreferences commit failed ?!")
 
-        prefs = context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE)
-        editor = prefs.edit()
+        var prefs2 = context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE)
+        var editor2 = prefs.edit().let {
+            it.putLong(Constants.prefTimerStartTime, TimerState.startTime)
+            it.putLong(Constants.prefTimerPauseElapsed, TimerState.elapsedTime)
+            it.putLong(Constants.prefTimerDuration, TimerState.duration)
+            it.putBoolean(Constants.prefTimerRunning, TimerState.isRunning)
+            it.putBoolean(Constants.prefTimerReset, TimerState.isReset)
+            it.putLong(Constants.prefTimerUpdateTimestamp, TimerState.updateTimestamp)
+        }
 
-        editor.putLong(Constants.prefTimerStartTime, TimerState.startTime)
-        editor.putLong(Constants.prefTimerPauseElapsed, TimerState.elapsedTime)
-        editor.putLong(Constants.prefTimerDuration, TimerState.duration)
-        editor.putBoolean(Constants.prefTimerRunning, TimerState.isRunning)
-        editor.putBoolean(Constants.prefTimerReset, TimerState.isReset)
-        editor.putLong(Constants.prefTimerUpdateTimestamp, TimerState.updateTimestamp)
-
-        if (!editor.commit())
+        if (!editor2.commit())
             Log.v(TAG, "savePreferences commit failed ?!")
     }
 
@@ -57,13 +57,13 @@ object PreferencesHelper {
                 Log.e(TAG, "stopwatch state not initialized, can't broadcast preferences")
             } else {
                 Log.v(TAG, "broadcasting stopwatch preferences")
-                val broadcast = Intent(Constants.stopwatchUpdateIntent)
-                broadcast.putExtra(Constants.prefStopwatchStartTime, StopwatchState.startTime)
-                broadcast.putExtra(Constants.prefStopwatchBaseTime, StopwatchState.priorTime)
-                broadcast.putExtra(Constants.prefStopwatchRunning, StopwatchState.isRunning)
-                broadcast.putExtra(Constants.prefStopwatchReset, StopwatchState.isReset)
-                broadcast.putExtra(Constants.prefStopwatchUpdateTimestamp, StopwatchState.updateTimestamp)
-                context.sendBroadcast(broadcast)
+                context.sendBroadcast(Intent(Constants.stopwatchUpdateIntent).let {
+                    it.putExtra(Constants.prefStopwatchStartTime, StopwatchState.startTime)
+                    it.putExtra(Constants.prefStopwatchBaseTime, StopwatchState.priorTime)
+                    it.putExtra(Constants.prefStopwatchRunning, StopwatchState.isRunning)
+                    it.putExtra(Constants.prefStopwatchReset, StopwatchState.isReset)
+                    it.putExtra(Constants.prefStopwatchUpdateTimestamp, StopwatchState.updateTimestamp)
+                })
             }
         }
 
@@ -72,14 +72,14 @@ object PreferencesHelper {
                 Log.e(TAG, "timer state not initialized, can't broadcast preferences")
             } else {
                 Log.v(TAG, "broadcasting timer preferences")
-                val broadcast = Intent(Constants.timerUpdateIntent)
-                broadcast.putExtra(Constants.prefTimerStartTime, TimerState.startTime)
-                broadcast.putExtra(Constants.prefTimerPauseElapsed, TimerState.elapsedTime)
-                broadcast.putExtra(Constants.prefTimerDuration, TimerState.duration)
-                broadcast.putExtra(Constants.prefTimerRunning, TimerState.isRunning)
-                broadcast.putExtra(Constants.prefTimerReset, TimerState.isReset)
-                broadcast.putExtra(Constants.prefTimerUpdateTimestamp, TimerState.updateTimestamp)
-                context.sendBroadcast(broadcast)
+                context.sendBroadcast(Intent(Constants.timerUpdateIntent).let {
+                    it.putExtra(Constants.prefTimerStartTime, TimerState.startTime)
+                    it.putExtra(Constants.prefTimerPauseElapsed, TimerState.elapsedTime)
+                    it.putExtra(Constants.prefTimerDuration, TimerState.duration)
+                    it.putExtra(Constants.prefTimerRunning, TimerState.isRunning)
+                    it.putExtra(Constants.prefTimerReset, TimerState.isReset)
+                    it.putExtra(Constants.prefTimerUpdateTimestamp, TimerState.updateTimestamp)
+                })
             }
         }
     }

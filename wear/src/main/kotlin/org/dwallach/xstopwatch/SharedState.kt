@@ -25,7 +25,7 @@ abstract class SharedState: Observable() {
         protected set
     var isVisible: Boolean = false
         set(visible) {
-            Log.v(TAG, shortName + "visible: " + visible)
+            Log.v(TAG, "${shortName} visible: $visible")
             field = visible
             isInitialized = true
 
@@ -40,7 +40,7 @@ abstract class SharedState: Observable() {
     }
 
     open fun reset(context: Context?) {
-        Log.v(TAG, shortName + "reset")
+        Log.v(TAG, "${shortName} reset")
         isRunning = false
         isReset = true
         isInitialized = true
@@ -50,7 +50,7 @@ abstract class SharedState: Observable() {
     }
 
     open fun run(context: Context) {
-        Log.v(TAG, shortName + "run")
+        Log.v(TAG, "${shortName} run")
 
         isReset = false
         isRunning = true
@@ -61,7 +61,7 @@ abstract class SharedState: Observable() {
     }
 
     open fun pause(context: Context) {
-        Log.v(TAG, shortName + "pause")
+        Log.v(TAG, "${shortName} pause")
 
         isRunning = false
         isInitialized = true
@@ -71,7 +71,7 @@ abstract class SharedState: Observable() {
     }
 
     fun click(context: Context) {
-        Log.v(TAG, shortName + "click")
+        Log.v(TAG, "${shortName} click")
         if (isRunning)
             pause(context)
         else
@@ -80,11 +80,11 @@ abstract class SharedState: Observable() {
 
     fun pingObservers() {
         // this incantation will make observers elsewhere aware that there's new content
-        Log.v(TAG, shortName + "pinging")
+        Log.v(TAG, "${shortName} pinging")
         setChanged()
         notifyObservers()
         clearChanged()
-        Log.v(TAG, shortName + "ping complete")
+        Log.v(TAG, "${shortName} ping complete")
     }
 
     /**

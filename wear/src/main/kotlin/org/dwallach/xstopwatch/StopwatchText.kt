@@ -159,7 +159,7 @@ class StopwatchText : View, Observer {
     }
 
     companion object {
-        private val TAG = "StopwatchText"
+        private const val TAG = "StopwatchText"
 
         const val MSG_UPDATE_TIME = 0
     }

@@ -71,15 +71,13 @@ class NotificationHelper(private val context: Context, private val appIcon: Int,
 
         val bg = BitmapFactory.decodeResource(context.resources, state.iconID)
 
-        val notification = Notification.Builder(context).let {
-            // "it" is just the builder created above, which we need to treat differently if
-            // the timer / stopwatch is running vs. paused
+        val notification = Notification.Builder(context).apply {
             if(!isRunning)
-                it.addAction(context, android.R.drawable.ic_media_play, "", clickPendingIntent)
+                addAction(context, android.R.drawable.ic_media_play, "", clickPendingIntent)
                         .setContentTitle(state.toString())
                         .setContentText(title) // deliberately backwards for these two so the peek card has the important stuff above the fold
             else
-                it.addAction(context, android.R.drawable.ic_media_pause, "", clickPendingIntent)
+                addAction(context, android.R.drawable.ic_media_pause, "", clickPendingIntent)
                         .setWhen(eventTime)
                         .setUsesChronometer(true)
                         .setShowWhen(true)

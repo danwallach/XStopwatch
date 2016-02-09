@@ -8,8 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.NumberPicker
+
+import kotlinx.android.synthetic.main.fragment_time_picker.*
 
 class TimePickerFragment private constructor() : DialogFragment() {
     private var hours: Int = 0
@@ -28,26 +29,25 @@ class TimePickerFragment private constructor() : DialogFragment() {
             hours = arguments.getInt(HOURS_PARAM)
             minutes = arguments.getInt(MINUTES_PARAM)
         }
-        val okButton = mainView.findViewById(R.id.pickerOkButton) as ImageButton
-        val resetButton = mainView.findViewById(R.id.pickerResetButton) as ImageButton
-        val hoursPicker = mainView.findViewById(R.id.hoursPicker) as NumberPicker
-        val minutesPicker = mainView.findViewById(R.id.minutesPicker) as NumberPicker
 
-        // it's a kludge: not allowed in the styles anywhere so we have to do this awful thing instead
-        setNumberPickerTextColor(hoursPicker, -1)
-        setNumberPickerTextColor(minutesPicker, -1)
+        hoursPicker.apply {
+            setTextColor(-1)
+            minValue = 0
+            maxValue = 23
+            wrapSelectorWheel = false
+            value = hours
+        }
 
-        hoursPicker.minValue = 0
-        hoursPicker.maxValue = 23
-        hoursPicker.wrapSelectorWheel = false
-        hoursPicker.value = hours
-        minutesPicker.minValue = 0
-        minutesPicker.maxValue = 59
-        minutesPicker.value = minutes
-        minutesPicker.wrapSelectorWheel = false
-        minutesPicker.setFormatter { "%02d".format(it) } // numbers less than ten will have a leading zero
+        minutesPicker.apply {
+            setTextColor(-1)
+            minValue = 0
+            maxValue = 59
+            value = minutes
+            wrapSelectorWheel = false
+            setFormatter { "%02d".format(it) } // numbers less than ten will have a leading zero
+        }
 
-        okButton.setOnClickListener {
+        pickerOkButton.setOnClickListener {
             hours = hoursPicker.value
             minutes = minutesPicker.value
             TimerState.setDuration(null, (hours * 3600000 + minutes * 60000).toLong())
@@ -56,7 +56,7 @@ class TimePickerFragment private constructor() : DialogFragment() {
             dismiss()
         }
 
-        resetButton.setOnClickListener { dismiss() }
+        pickerResetButton.setOnClickListener { dismiss() }
 
         return mainView
     }
@@ -72,43 +72,44 @@ class TimePickerFragment private constructor() : DialogFragment() {
          */
         fun newInstance(): TimePickerFragment {
             val fragment = TimePickerFragment()
-            val args = Bundle()
             val duration = TimerState.duration // in milliseconds
             val minutes = (duration / 60000 % 60).toInt()
             val hours = (duration / 3600000).toInt()
-            args.putInt(HOURS_PARAM, hours)
-            args.putInt(MINUTES_PARAM, minutes)
-            fragment.arguments = args
+            fragment.arguments = Bundle().apply {
+                putInt(HOURS_PARAM, hours)
+                putInt(MINUTES_PARAM, minutes)
+            }
             return fragment
         }
 
-        // this solution adapted from: http://stackoverflow.com/questions/18120840/numberpicker-textcolour
-        fun setNumberPickerTextColor(numberPicker: NumberPicker, color: Int) {
-            Log.v(TAG, "setting number picker color")
+    }
+}
 
-            val count = numberPicker.childCount
-            for (i in 0..count - 1) {
-                val child = numberPicker.getChildAt(i)
-                if (child is EditText) {
-                    try {
-                        Log.v(TAG, "found an edit text field ($i)")
-                        val selectorWheelPaintField = numberPicker.javaClass.getDeclaredField("mSelectorWheelPaint")
-                        selectorWheelPaintField.isAccessible = true
-                        (selectorWheelPaintField.get(numberPicker) as Paint).color = color
-                        val oldColor = child.currentTextColor
-                        Log.v(TAG, "oldColor(%x), newColor(%x)".format(oldColor, color))
-                        child.setTextColor(color)
-                        numberPicker.invalidate()
-                        return
-                    } catch (e: NoSuchFieldException) {
-                        Log.w(TAG, e)
-                    } catch (e: IllegalAccessException) {
-                        Log.w(TAG, e)
-                    } catch (e: IllegalArgumentException) {
-                        Log.w(TAG, e)
-                    }
+// this solution adapted from: http://stackoverflow.com/questions/18120840/numberpicker-textcolour
+fun NumberPicker.setTextColor(color: Int) {
+    val TAG = "setNumberPickerTextColor"
+    Log.v(TAG, "setting number picker color")
 
-                }
+    val count = childCount
+    for (i in 0..count - 1) {
+        val child = getChildAt(i)
+        if (child is EditText) {
+            try {
+                Log.v(TAG, "found an edit text field ($i)")
+                val selectorWheelPaintField = javaClass.getDeclaredField("mSelectorWheelPaint")
+                selectorWheelPaintField.isAccessible = true
+                (selectorWheelPaintField.get(this) as Paint).color = color
+                val oldColor = child.currentTextColor
+                Log.v(TAG, "oldColor(%x), newColor(%x)".format(oldColor, color))
+                child.setTextColor(color)
+                invalidate()
+                return
+            } catch (e: NoSuchFieldException) {
+                Log.w(TAG, e)
+            } catch (e: IllegalAccessException) {
+                Log.w(TAG, e)
+            } catch (e: IllegalArgumentException) {
+                Log.w(TAG, e)
             }
         }
     }

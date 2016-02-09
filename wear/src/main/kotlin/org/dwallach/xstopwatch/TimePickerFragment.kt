@@ -87,7 +87,7 @@ class TimePickerFragment private constructor() : DialogFragment() {
 
 // this solution adapted from: http://stackoverflow.com/questions/18120840/numberpicker-textcolour
 fun NumberPicker.setTextColor(color: Int) {
-    val TAG = "setNumberPickerTextColor"
+    val TAG = "NumberPicker.setTextColor"
     Log.v(TAG, "setting number picker color")
 
     val count = childCount

@@ -31,4 +31,6 @@ object Constants {
     const val timerStartStopIntent = "org.dwallach.x.timer.startstop"
 
     const val actionTimerComplete = "org.dwallach.x.timer.ACTION_TIMER_COMPLETE"
+
+    const val timerDefaultDuration = 600000L // 10 minutes in milliseconds
 }

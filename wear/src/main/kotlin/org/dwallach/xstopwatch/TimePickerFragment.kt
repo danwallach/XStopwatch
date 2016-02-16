@@ -8,27 +8,53 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.NumberPicker
 
-import kotlinx.android.synthetic.main.fragment_time_picker.*
+class TimePickerFragment : DialogFragment() {
+    private var hours: Int
+    private var minutes: Int
 
-class TimePickerFragment private constructor() : DialogFragment() {
-    private var hours: Int = 0
-    private var minutes: Int = 0
+    /**
+     * This is a totally cheesy time picker. We'd rather use the system one, but it doesn't work.
+     */
+    init {
+        val duration = TimerState.duration // in milliseconds
+        minutes = (duration / 60000 % 60).toInt()
+        hours = (duration / 3600000).toInt()
+//        arguments = Bundle().apply {
+//            putInt(HOURS_PARAM, hours)
+//            putInt(MINUTES_PARAM, minutes)
+//        }
+    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        if(inflater == null) {
+            Log.e(TAG, "no inflater, can't do anything!")
+            return null
+        }
+
         // nuke the frame around the fragment
         setStyle(DialogFragment.STYLE_NO_FRAME, 0)
 
         // Inflate the layout for this fragment
         val mainView = inflater.inflate(R.layout.fragment_time_picker, container, false)
 
+//        if (arguments != null) {
+//            hours = arguments.getInt(HOURS_PARAM)
+//            minutes = arguments.getInt(MINUTES_PARAM)
+//        }
 
-        if (arguments != null) {
-            hours = arguments.getInt(HOURS_PARAM)
-            minutes = arguments.getInt(MINUTES_PARAM)
-        }
+        // Weirdly, our attempt to use Kotlin synthetic Android stuff to read out the
+        // parts of the UI faled with a null object reference, which really shouldn't
+        // have happened. But this only happens occasionally. Until we understand what went
+        // wrong, we're dumping the Kotlin synthetic stuff and doing it the old fashioned way.
+
+        val pickerOkButton =  mainView.findViewById(R.id.pickerOkButton) as ImageButton;
+        val pickerResetButton =  mainView.findViewById(R.id.pickerResetButton) as ImageButton;
+        val hoursPicker =  mainView.findViewById(R.id.hoursPicker) as NumberPicker;
+        val minutesPicker =  mainView.findViewById(R.id.minutesPicker) as NumberPicker;
 
         hoursPicker.apply {
             setTextColor(-1)
@@ -50,7 +76,9 @@ class TimePickerFragment private constructor() : DialogFragment() {
         pickerOkButton.setOnClickListener {
             hours = hoursPicker.value
             minutes = minutesPicker.value
-            TimerState.setDuration(null, (hours * 3600000 + minutes * 60000).toLong())
+            TimerState.setDuration(null, (hours * 3600000 + minutes * 60000).toLong()) // also resets the timer
+            PreferencesHelper.savePreferences(context)
+            PreferencesHelper.broadcastPreferences(context, Constants.timerUpdateIntent)
 
             // okay, we're done!
             dismiss()
@@ -63,25 +91,8 @@ class TimePickerFragment private constructor() : DialogFragment() {
 
     companion object {
         private const val TAG = "TimePickerFragment"
-
-        const val HOURS_PARAM = "hours"
-        const val MINUTES_PARAM = "minutes"
-
-        /**
-         * This is a totally cheesy time picker. We'd rather use the system one, but it doesn't work.
-         */
-        fun newInstance(): TimePickerFragment {
-            val fragment = TimePickerFragment()
-            val duration = TimerState.duration // in milliseconds
-            val minutes = (duration / 60000 % 60).toInt()
-            val hours = (duration / 3600000).toInt()
-            fragment.arguments = Bundle().apply {
-                putInt(HOURS_PARAM, hours)
-                putInt(MINUTES_PARAM, minutes)
-            }
-            return fragment
-        }
-
+//        const val HOURS_PARAM = "hours"
+//        const val MINUTES_PARAM = "minutes"
     }
 }
 

@@ -65,12 +65,14 @@ class TimerActivity : Activity(), Observer {
             // Do something with the time chosen by the user
             Log.v(TAG, "User selected time: %d:%02d".format(hour, minute))
             TimerState.setDuration(null, hour * 3600000L + minute * 60000L)
+            PreferencesHelper.savePreferences(context)
+            PreferencesHelper.broadcastPreferences(context, Constants.timerUpdateIntent)
         }
     }
 
     // call to this specified in the layout xml files
     fun showTimePickerDialog(v: View) =
-        TimePickerFragment.newInstance().show(fragmentManager, "timePicker")
+        TimePickerFragment().show(fragmentManager, "timePicker")
 //        FailedTimePickerFragment().show(fragmentManager, "timePicker")
 
     // call to this specified in the layout xml files

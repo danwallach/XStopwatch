@@ -102,7 +102,7 @@ object PreferencesHelper {
         context.getSharedPreferences(Constants.sharedPrefsTimer, Context.MODE_PRIVATE).apply {
             val startTime = getLong(Constants.prefTimerStartTime, 0L)
             val pauseDelta = getLong(Constants.prefTimerPauseElapsed, 0L)
-            val duration = getLong(Constants.prefTimerDuration, 0L)
+            val duration = getLong(Constants.prefTimerDuration, Constants.timerDefaultDuration)
             var isRunning = getBoolean(Constants.prefTimerRunning, false)
             var isReset = getBoolean(Constants.prefTimerReset, true)
             val updateTimestamp = getLong(Constants.prefTimerUpdateTimestamp, 0L)

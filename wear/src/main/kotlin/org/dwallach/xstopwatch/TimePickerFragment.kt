@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.NumberPicker
+import org.jetbrains.anko.find
 
 class TimePickerFragment : DialogFragment() {
     private var hours: Int
@@ -41,50 +42,42 @@ class TimePickerFragment : DialogFragment() {
         // Inflate the layout for this fragment
         val mainView = inflater.inflate(R.layout.fragment_time_picker, container, false)
 
-//        if (arguments != null) {
-//            hours = arguments.getInt(HOURS_PARAM)
-//            minutes = arguments.getInt(MINUTES_PARAM)
-//        }
+        mainView.apply {
+            val pickerOkButton = find<ImageButton>(R.id.pickerOkButton)
+            val pickerResetButton = find<ImageButton>(R.id.pickerResetButton)
+            val hoursPicker = find<NumberPicker>(R.id.hoursPicker)
+            val minutesPicker = find<NumberPicker>(R.id.minutesPicker)
 
-        // Weirdly, our attempt to use Kotlin synthetic Android stuff to read out the
-        // parts of the UI faled with a null object reference, which really shouldn't
-        // have happened. But this only happens occasionally. Until we understand what went
-        // wrong, we're dumping the Kotlin synthetic stuff and doing it the old fashioned way.
+            hoursPicker.apply {
+                setTextColor(-1)
+                minValue = 0
+                maxValue = 23
+                wrapSelectorWheel = false
+                value = hours
+            }
 
-        val pickerOkButton =  mainView.findViewById(R.id.pickerOkButton) as ImageButton;
-        val pickerResetButton =  mainView.findViewById(R.id.pickerResetButton) as ImageButton;
-        val hoursPicker =  mainView.findViewById(R.id.hoursPicker) as NumberPicker;
-        val minutesPicker =  mainView.findViewById(R.id.minutesPicker) as NumberPicker;
+            minutesPicker.apply {
+                setTextColor(-1)
+                minValue = 0
+                maxValue = 59
+                value = minutes
+                wrapSelectorWheel = false
+                setFormatter { "%02d".format(it) } // numbers less than ten will have a leading zero
+            }
 
-        hoursPicker.apply {
-            setTextColor(-1)
-            minValue = 0
-            maxValue = 23
-            wrapSelectorWheel = false
-            value = hours
+            pickerOkButton.setOnClickListener {
+                hours = hoursPicker.value
+                minutes = minutesPicker.value
+                TimerState.setDuration(null, (hours * 3600000 + minutes * 60000).toLong()) // also resets the timer
+                PreferencesHelper.savePreferences(context)
+                PreferencesHelper.broadcastPreferences(context, Constants.timerUpdateIntent)
+
+                // okay, we're done!
+                dismiss()
+            }
+
+            pickerResetButton.setOnClickListener { dismiss() }
         }
-
-        minutesPicker.apply {
-            setTextColor(-1)
-            minValue = 0
-            maxValue = 59
-            value = minutes
-            wrapSelectorWheel = false
-            setFormatter { "%02d".format(it) } // numbers less than ten will have a leading zero
-        }
-
-        pickerOkButton.setOnClickListener {
-            hours = hoursPicker.value
-            minutes = minutesPicker.value
-            TimerState.setDuration(null, (hours * 3600000 + minutes * 60000).toLong()) // also resets the timer
-            PreferencesHelper.savePreferences(context)
-            PreferencesHelper.broadcastPreferences(context, Constants.timerUpdateIntent)
-
-            // okay, we're done!
-            dismiss()
-        }
-
-        pickerResetButton.setOnClickListener { dismiss() }
 
         return mainView
     }

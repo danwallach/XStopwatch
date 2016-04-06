@@ -21,7 +21,6 @@ import org.jetbrains.anko.*
 
 class StopwatchActivity : Activity(), Observer {
 
-    private var resetButton: ImageButton? = null
     private var playButton: ImageButton? = null
     private var notificationHelper: NotificationHelper? = null
     private var stopwatchText: StopwatchText? = null
@@ -57,14 +56,9 @@ class StopwatchActivity : Activity(), Observer {
         watch_view_stub.setOnLayoutInflatedListener {
             Log.v(TAG, "onLayoutInflated")
 
-            // note to the Kotlin reader: it would have been preferable to use the Kotlin "synthetic"
-            // support to avoid this whole findViewById nonsense, as we did above for watch_view_stub,
-            // but since we've got two different layouts (round and square), the synthetic support
-            // isn't smart enough to let us do the right thing. So instead, we get the old-school version.
-
-            resetButton = it.findViewById(R.id.resetButton) as ImageButton
-            playButton = it.findViewById(R.id.playButton) as ImageButton
-            stopwatchText = it.findViewById(R.id.elapsedTime) as StopwatchText
+            val resetButton = it.find<ImageButton>(R.id.resetButton)
+            playButton = it.find<ImageButton>(R.id.playButton)
+            stopwatchText = it.find<StopwatchText>(R.id.elapsedTime)
             stopwatchText?.setSharedState(StopwatchState)
 
             // bring in saved preferences
@@ -88,7 +82,7 @@ class StopwatchActivity : Activity(), Observer {
             // the broadcast receiver is alive
             NotificationService.kickStart(this@StopwatchActivity)
 
-            resetButton?.setOnClickListener {
+            resetButton.setOnClickListener {
                 StopwatchState.reset(this@StopwatchActivity)
                 PreferencesHelper.savePreferences(this@StopwatchActivity)
                 PreferencesHelper.broadcastPreferences(this@StopwatchActivity, Constants.stopwatchUpdateIntent)
